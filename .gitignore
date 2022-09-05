@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/CacheService/.vs
+/CacheService/bin/Debug/net6.0
+/CacheService/cacheDir
+/CacheService/obj
+*.user
+/CacheServiceWebProxy/.vs
+/CacheServiceWebProxy/bin/Debug/net6.0
+/CacheServiceWebProxy/obj

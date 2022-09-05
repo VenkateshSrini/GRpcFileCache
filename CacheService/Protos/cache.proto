@@ -1,0 +1,53 @@
+syntax = "proto3";
+import "google/protobuf/duration.proto";  
+package cache.v1;
+
+option csharp_namespace = "CacheService.Caching";
+
+
+message StoreCacheRequest{
+	string key=1;
+	string value=2;
+	int32 cache_duration_in_minutes=3;
+}
+message StoreCacheResponse{
+	string key=1;
+	int32 status_code=2;
+	string message=3;
+}
+service Cache{
+	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse);
+	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse);
+	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse);
+}
+message GetCachedValueRequest{
+	string key=1;
+}
+message GetCachedValueResponse{
+	string key=1;
+	oneof get_result{
+		GetCachedValue cached_value=3;
+		CacheError cache_retrival_error=4;
+	}
+}
+message GetCachedValue{
+	string value=1;
+}
+message DeleteCachedValueRequest{
+	string key=1;
+}
+message DeleteCachedResponse{
+	string key=1;
+	oneof delete_result{
+		DeleteCachedValue delete_response=2;
+		CacheError cache_deletion_error=3;
+	}
+}
+message DeleteCachedValue{
+	string value=1;
+	string message=2;
+}
+message CacheError{
+	int32 error_code=1;
+	string message=2;
+}
