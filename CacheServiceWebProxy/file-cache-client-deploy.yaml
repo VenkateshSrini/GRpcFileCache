@@ -24,4 +24,6 @@ spec:
         - containerPort: 80
         env:
         - name: CacheService__url
-          value: http://file-cache-grpc-service.default.svc.cluster.local:5275
+          value: http://file-cache-grpc-service
+        - name: DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT
+          value: "true"

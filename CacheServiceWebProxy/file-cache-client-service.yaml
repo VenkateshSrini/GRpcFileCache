@@ -7,7 +7,7 @@ metadata:
   name: file-cache-client-service
 spec:
   ports:
-  - port: 6000
+  - port: 6007
     protocol: TCP
     targetPort: 80
   selector:
