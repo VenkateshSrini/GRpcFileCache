@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: file-cache-client-deploy
+  name: file-cache-client-service
+spec:
+  ports:
+  - port: 6000
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: file-cache-client-deploy
+  type: LoadBalancer
+status:
+  loadBalancer: {}

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: file-cache-deploy
+  name: file-cache-grpc-service
+spec:
+  ports:
+  - port: 5275
+    protocol: TCP
+    targetPort: 5275
+  selector:
+    app: file-cache-deploy
+  type: ClusterIP
+status:
+  loadBalancer: {}
