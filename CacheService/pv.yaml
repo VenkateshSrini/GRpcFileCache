@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/mnt/c/local-file-access"
+    path: "/run/desktop/mnt/c/CarryCase/Venkatesh/M2c/cache"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

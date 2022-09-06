@@ -3,7 +3,11 @@ using Net.DistributedFileStoreCache;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(webOptions =>
 {
-    webOptions.ListenLocalhost(5275, kestrelOptions => {
+    //webOptions.ListenLocalhost(5275, kestrelOptions => {
+    //    kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+    //});
+    webOptions.ListenAnyIP(5275, kestrelOptions =>
+    {
         kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
 });
