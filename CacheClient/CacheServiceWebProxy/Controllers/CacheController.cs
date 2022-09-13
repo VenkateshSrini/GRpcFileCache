@@ -1,6 +1,5 @@
-﻿using CacheServiceWebProxy.Cache;
+﻿using Cache.Library.CacheWrapper;
 using CacheServiceWebProxy.MessagePacket;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CacheServiceWebProxy.Controllers

@@ -1,14 +1,14 @@
-﻿using CacheClient;
-using static CacheClient.DeleteCachedResponse;
-using static CacheClient.GetCachedValueResponse;
+﻿using Microsoft.Extensions.Logging;
+using static Cache.Library.DeleteCachedResponse;
+using static Cache.Library.GetCachedValueResponse;
 
-namespace CacheServiceWebProxy.Cache
+namespace Cache.Library.CacheWrapper
 {
     public class FileCache : IFileCache
     {
-        private readonly CacheClient.Cache.CacheClient _cacheClient;
+        private readonly CacheServices.CacheServicesClient _cacheClient;
         private readonly ILogger<FileCache> _logger;
-        public FileCache(CacheClient.Cache.CacheClient cacheClient, ILogger<FileCache> logger)
+        public FileCache(CacheServices.CacheServicesClient cacheClient, ILogger<FileCache> logger)
         {
             _cacheClient = cacheClient;
             _logger = logger;

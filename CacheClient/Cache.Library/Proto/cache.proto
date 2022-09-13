@@ -2,7 +2,7 @@ syntax = "proto3";
 import "google/protobuf/duration.proto";  
 package cache.v1;
 
-option csharp_namespace = "CacheClient";
+option csharp_namespace = "Cache.Library";
 
 
 message StoreCacheRequest{
@@ -15,7 +15,7 @@ message StoreCacheResponse{
 	int32 status_code=2;
 	string message=3;
 }
-service Cache{
+service CacheServices{
 	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse);
 	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse);
 	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse);

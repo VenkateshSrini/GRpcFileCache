@@ -6,10 +6,11 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["CacheServiceWebProxy.csproj", "."]
-RUN dotnet restore "./CacheServiceWebProxy.csproj"
+COPY ["CacheServiceWebProxy/CacheServiceWebProxy.csproj", "CacheServiceWebProxy/"]
+COPY ["Cache.Library/Cache.Library.csproj", "Cache.Library/"]
+RUN dotnet restore "CacheServiceWebProxy/CacheServiceWebProxy.csproj"
 COPY . .
-WORKDIR "/src/."
+WORKDIR "/src/CacheServiceWebProxy"
 RUN dotnet build "CacheServiceWebProxy.csproj" -c Release -o /app/build
 
 FROM build AS publish

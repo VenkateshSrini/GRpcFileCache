@@ -1,4 +1,4 @@
-﻿namespace CacheServiceWebProxy.Cache
+﻿namespace Cache.Library.CacheWrapper
 {
     public class CacheResponse
     {

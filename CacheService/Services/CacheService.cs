@@ -5,7 +5,7 @@ using Net.DistributedFileStoreCache;
 
 namespace CacheService.Services
 {
-    public class CacheService : Cache.CacheBase
+    public class CacheService : CacheServices.CacheServicesBase
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<CacheService> _logger;

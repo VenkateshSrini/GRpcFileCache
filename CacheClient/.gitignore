@@ -3,10 +3,11 @@
 ################################################################################
 
 /.vs
-/CacheClient/Cache.Library/bin/Debug/net6.0
-/CacheClient/Cache.Library/obj
 /CacheService/.vs
 /CacheService/bin/Debug/net6.0
 /CacheService/cacheDir
 /CacheService/obj
 *.user
+/CacheServiceWebProxy/.vs
+/CacheServiceWebProxy/bin/Debug/net6.0
+/CacheServiceWebProxy/obj
