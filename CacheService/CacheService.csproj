@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>041a2961-5f72-4afc-a41a-c9ec9f93fef5</UserSecretsId>
@@ -10,19 +10,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
+    
+    <PackageReference Include="Grpc.AspNetCore" Version="2.50.0" />
+    
+    <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="7.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-    <PackageReference Include="Net.DistributedFileStoreCache" Version="1.0.0" />
-
+    <PackageReference Include="Net.DistributedFileStoreCache" Version="2.0.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Protobuf Include="Protos\cache.proto" GrpcServices="Server">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Protobuf>
+    <Protobuf Include="Protos\cache.proto" GrpcServices="Server" />
+    
     
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Protos\" />
-  </ItemGroup>
+  
 
 </Project>
