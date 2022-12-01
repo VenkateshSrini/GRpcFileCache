@@ -10,13 +10,18 @@ builder.WebHost.ConfigureKestrel(webOptions =>
     {
         kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
+    webOptions.ListenAnyIP(6000, kestrelOptions =>
+    {
+        kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
+    });
 });
 
 // Additional configuration is required to successfully run gRPC on macOS.
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 
 // Add services to the container.
-builder.Services.AddGrpc();
+builder.Services.AddGrpc()
+                .AddJsonTranscoding();
 builder.Services.AddDistributedFileStoreCache(options =>
 {
     if (!Directory.Exists("cacheDir"))

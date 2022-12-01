@@ -343,7 +343,14 @@ message HttpRule {
     // for services that provide content to Web (HTML) clients.
     CustomHttpPattern custom = 8;
   }
+  // A custom pattern is used for defining custom HTTP verb.
+  message CustomHttpPattern {
+      // The name of this custom HTTP verb.
+      string kind = 1;
 
+      // The path matched by this custom verb.
+      string path = 2;
+  }
   // The name of the request field whose value is mapped to the HTTP request
   // body, or `*` for mapping all request fields not captured by the path
   // pattern to the HTTP body, or omitted for not having any HTTP request body.
@@ -364,4 +371,5 @@ message HttpRule {
   // not contain an `additional_bindings` field themselves (that is,
   // the nesting may only be one level deep).
   repeated HttpRule additional_bindings = 11;
+
 }

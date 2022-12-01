@@ -1,5 +1,5 @@
 syntax = "proto3";
-import "google/api/annotations.proto";
+import "Protos/google/api/annotations.proto";
 package cache.v1;
 
 option csharp_namespace = "CacheService.Caching";
@@ -16,9 +16,21 @@ message StoreCacheResponse{
 	string message=3;
 }
 service CacheServices{
-	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse);
-	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse);
-	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse);
+	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse){
+		option (google.api.http) = {
+			post: "/v1/cache"
+		};
+	};
+	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse){
+		option (google.api.http) = {
+			get: "/v1/cache/{key}"
+		};
+	};
+	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse){
+		option (google.api.http) = {
+			delete: "/v1/cache/{key}"
+		};
+	};
 }
 message GetCachedValueRequest{
 	string key=1;
