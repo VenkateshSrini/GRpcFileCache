@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
-using static Cache.Library.DeleteCachedResponse;
-using static Cache.Library.GetCachedValueResponse;
+﻿using CacheService.Caching;
+using Microsoft.Extensions.Logging;
+using static CacheService.Caching.DeleteCachedResponse;
+using static CacheService.Caching.GetCachedValueResponse;
 
 namespace Cache.Library.CacheWrapper
 {
@@ -15,7 +16,8 @@ namespace Cache.Library.CacheWrapper
         }
         public CacheResponse Set(string key, string value, int timePeriod)
         {
-            var request = new StoreCacheRequest
+            var request = new StoreCacheRequest();
+            request.CacheMessage = new CacheMessage
             {
                 Key = key,
                 Value = value,

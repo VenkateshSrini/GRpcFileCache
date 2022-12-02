@@ -1,4 +1,5 @@
 ﻿using Cache.Library.CacheWrapper;
+using CacheService.Caching;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;

@@ -11,3 +11,4 @@
 /CacheService/obj
 *.user
 /CacheService/bin/Debug/net7.0
+/CacheClient/Cache.Library/bin/Debug/net7.0

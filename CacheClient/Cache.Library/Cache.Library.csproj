@@ -1,25 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Proto\cache.proto" />
-    <PackageReference Include="Google.Protobuf" Version="3.21.5" />
-    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.48.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.48.1">
+    <None Remove="Protos\cache.proto" />
+    <None Remove="Protos\google\api\annotations.proto" />
+    <None Remove="Protos\google\api\http.proto" />
+    <PackageReference Include="Google.Protobuf" Version="3.21.10" />
+    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.50.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.50.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Proto\cache.proto">
+    <Protobuf Include="Protos\cache.proto">
       <GrpcServices>Client</GrpcServices>
     </Protobuf>
+    <Protobuf Include="Protos\google\api\annotations.proto" GrpcServices="Client" />
+    <Protobuf Include="Protos\google\api\http.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>
