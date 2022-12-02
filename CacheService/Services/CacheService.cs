@@ -22,12 +22,12 @@ namespace CacheService.Services
             var timePeriod = _configuration["TimePeriodinMinutes"];
 
             StoreCacheResponse response = new();
-            if (string.IsNullOrWhiteSpace(request.Key))
+            if (string.IsNullOrWhiteSpace(request.CacheMessage.Key))
             {
                 response.StatusCode = 400;
                 response.Message = "Key is empty";
             }
-            else if (string.IsNullOrWhiteSpace(request.Value))
+            else if (string.IsNullOrWhiteSpace(request.CacheMessage.Value))
             {
                 response.StatusCode = 400;
                 response.Message = "Value is empty";
@@ -35,19 +35,19 @@ namespace CacheService.Services
             else
             {
                 TimeSpan expiration;
-                if (request.CacheDurationInMinutes == 0)
+                if (request.CacheMessage.CacheDurationInMinutes == 0)
                     expiration = new TimeSpan(0,
                         int.Parse(timePeriod), 0);
                 else
                     expiration = new TimeSpan(0,
-                        request.CacheDurationInMinutes, 0); ;
+                        request.CacheMessage.CacheDurationInMinutes, 0); ;
 
-                _cache.Set(request?.Key, request?.Value,
+                _cache.Set(request?.CacheMessage.Key, request?.CacheMessage.Value,
                     new DistributedCacheEntryOptions
                     {
                         AbsoluteExpirationRelativeToNow = expiration
                     });
-                response.Key = request.Key;
+                response.Key = request.CacheMessage.Key;
                 response.StatusCode = 200;
                 response.Message = "success";
             }

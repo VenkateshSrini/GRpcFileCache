@@ -6,19 +6,24 @@ option csharp_namespace = "CacheService.Caching";
 
 
 message StoreCacheRequest{
-	string key=1;
-	string value=2;
-	int32 cache_duration_in_minutes=3;
+	CacheMessage cacheMessage=1;
 }
 message StoreCacheResponse{
 	string key=1;
 	int32 status_code=2;
 	string message=3;
 }
+message CacheMessage{
+	string key=1;
+	string value=2;
+	int32 cache_duration_in_minutes=3;
+}
+
 service CacheServices{
 	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse){
 		option (google.api.http) = {
 			post: "/v1/cache"
+			body: "cacheMessage"
 		};
 	};
 	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse){

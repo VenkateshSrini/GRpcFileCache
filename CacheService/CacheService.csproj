@@ -7,13 +7,16 @@
     <UserSecretsId>041a2961-5f72-4afc-a41a-c9ec9f93fef5</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     
     <PackageReference Include="Grpc.AspNetCore" Version="2.50.0" />
     
-    <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="7.0.0" />
+    <!--<PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="7.0.0" />-->
+    
+    <PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" Version="0.3.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="Net.DistributedFileStoreCache" Version="2.0.0" />
   </ItemGroup>
