@@ -9,5 +9,5 @@ The project has two solutions.<br/>
 * Cache Service
 * Cache Client.
 
-<p> The Cache service is the solution that does the cache actvity. It is a .NET core gRPC based solution. It uses file based persistence.  To use a different volumes only the PVC needs to be changed. <br>
-The cache client has the necessary client library and swagger enable ui for exposing the code externally via ingress or LB <br>
+<p> The Cache service is the solution that does the cache actvity. It is a .NET core gRPC based solution. It uses file based persistence.  To use a different volumes only the PVC needs to be changed. The gRpc transcoding is enabled. This can be used in platform where still gRpc client calling is not present. Swagger for gRPC has been enabled. gRpc transcoding can also be used to expose via LB where LB does not have gRPC support <br>
+The cache client has the necessary client library <br>
