@@ -22,11 +22,13 @@ spec:
         persistentVolumeClaim:
           claimName: pv-cache-claim
       containers:
-      - image: venkateshsrini3/file-cache
+      - image: venkateshsrini3/file-cache-transcoding
         name: file-cache
         volumeMounts:
         - name: pv-vol
           mountPath: /app/cacheDir
         ports:
         - containerPort: 5275
-status: {}
+          name: gRpc
+        - containerPort: 7007
+          name: http
