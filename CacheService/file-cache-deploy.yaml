@@ -29,6 +29,6 @@ spec:
           mountPath: /app/cacheDir
         ports:
         - containerPort: 5275
-          name: gRpc
+          name: grpc
         - containerPort: 7007
           name: http
