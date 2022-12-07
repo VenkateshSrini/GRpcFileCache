@@ -12,6 +12,6 @@ spec:
     targetPort: 5275
   selector:
     app: file-cache-deploy
-  type: ClusterIP
+  type: LoadBalancer
 status:
   loadBalancer: {}
