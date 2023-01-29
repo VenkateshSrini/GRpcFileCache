@@ -4,12 +4,13 @@ using Net.DistributedFileStoreCache;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(webOptions =>
 {
-
-    webOptions.ListenAnyIP(5275, kestrelOptions =>
+    var gRpcPort = builder.Configuration.GetValue<int>("http2Port");
+    var httpPort = builder.Configuration.GetValue<int>("http1Port");
+    webOptions.ListenAnyIP(gRpcPort, kestrelOptions =>
     {
         kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });
-    webOptions.ListenAnyIP(7007, kestrelOptions =>
+    webOptions.ListenAnyIP(httpPort, kestrelOptions =>
     {
         kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
     });

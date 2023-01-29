@@ -5,6 +5,7 @@ metadata:
   labels:
     app: file-cache-deploy
   name: file-cache-deploy
+  namespace: grpc-cache
 spec:
   replicas: 1
   selector:
@@ -28,7 +29,12 @@ spec:
         - name: pv-vol
           mountPath: /app/cacheDir
         ports:
-        - containerPort: 5275
+        - containerPort: 80
           name: grpc
         - containerPort: 7007
           name: http
+        env:
+        - name: "http2Port"
+          value: "80"
+        - name: "http1Port"
+          value: "7007"

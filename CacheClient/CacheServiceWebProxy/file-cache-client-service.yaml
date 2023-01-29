@@ -1,18 +1,18 @@
-﻿apiVersion: v1
+apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: file-cache-deploy
-  name: file-cache-http-service
+    app: file-cache-client-deploy
+  name: file-cache-client-service
   namespace: grpc-cache
 spec:
   ports:
-  - port: 7007
+  - port: 6007
     protocol: TCP
-    targetPort: 7007
+    targetPort: 80
   selector:
-    app: file-cache-deploy
+    app: file-cache-client-deploy
   type: LoadBalancer
 status:
   loadBalancer: {}

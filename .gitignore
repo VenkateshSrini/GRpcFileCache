@@ -12,3 +12,4 @@
 *.user
 /CacheService/bin/Debug/net7.0
 /CacheClient/Cache.Library/bin/Debug/net7.0
+/CacheClient/CacheServiceWebProxy/bin/Debug/net7.0

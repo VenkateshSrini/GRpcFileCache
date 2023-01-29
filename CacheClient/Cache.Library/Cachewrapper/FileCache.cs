@@ -13,6 +13,7 @@ namespace Cache.Library.CacheWrapper
         {
             _cacheClient = cacheClient;
             _logger = logger;
+            
         }
         public CacheResponse Set(string key, string value, int timePeriod)
         {

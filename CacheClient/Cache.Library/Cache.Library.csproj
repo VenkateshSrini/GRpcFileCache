@@ -10,9 +10,9 @@
     <None Remove="Protos\cache.proto" />
     <None Remove="Protos\google\api\annotations.proto" />
     <None Remove="Protos\google\api\http.proto" />
-    <PackageReference Include="Google.Protobuf" Version="3.21.10" />
-    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.50.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.50.0">
+    <PackageReference Include="Google.Protobuf" Version="3.21.12" />
+    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.51.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.51.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -5,13 +5,14 @@ metadata:
   labels:
     app: file-cache-deploy
   name: file-cache-grpc-service
+  namespace: grpc-cache
 spec:
   ports:
   - port: 5275
     protocol: TCP
-    targetPort: 5275
+    targetPort: 80
   selector:
     app: file-cache-deploy
-  type: LoadBalancer
+  clusterIP: None
 status:
   loadBalancer: {}
