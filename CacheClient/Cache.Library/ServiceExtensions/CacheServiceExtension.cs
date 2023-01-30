@@ -91,7 +91,7 @@ namespace Cache.Library.ServiceExtensions
             IConfiguration configuration)
         {
             services.AddSingleton<ResolverFactory>(new DnsResolverFactory(refreshInterval: TimeSpan.FromSeconds(25)));
-            services.AddSingleton<GrpcChannel>(channelService => {
+            services.AddScoped<GrpcChannel>(channelService => {
             var methodConfig = new MethodConfig
             {
                 Names = { MethodName.Default },
@@ -111,11 +111,11 @@ namespace Cache.Library.ServiceExtensions
                     ServiceProvider = channelService
                 });
             });
-            services.AddSingleton<CacheServices.CacheServicesClient>((sp) => {
+            services.AddScoped<CacheServices.CacheServicesClient>((sp) => {
                 var channel = sp.GetRequiredService<GrpcChannel>();
                 return new CacheServices.CacheServicesClient(channel);
             });
-            services.AddSingleton<IFileCache, FileCache>();
+            services.AddScoped<IFileCache, FileCache>();
             return services;
         }
     }
