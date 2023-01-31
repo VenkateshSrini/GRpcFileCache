@@ -23,7 +23,7 @@ spec:
         persistentVolumeClaim:
           claimName: pv-cache-claim
       containers:
-      - image: venkateshsrini3/file-cache-transcoding
+      - image: venkateshsrini3/file-cache-transcoding:dns
         name: file-cache
         volumeMounts:
         - name: pv-vol
@@ -38,3 +38,7 @@ spec:
           value: "80"
         - name: "http1Port"
           value: "7007"
+        - name: "podName"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
