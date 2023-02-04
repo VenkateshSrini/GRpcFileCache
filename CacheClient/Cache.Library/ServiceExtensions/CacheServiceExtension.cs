@@ -67,19 +67,23 @@ namespace Cache.Library.ServiceExtensions
         {
             var userId = configuration["CacheService:userId"];
             var password = configuration["CacheService:password"];
+            var uri = new Uri(configuration["CacheService:url"]);
             services.AddGrpcClient<CacheServices.CacheServicesClient>(options =>
             {
-                options.Address = new Uri(configuration["CacheService:url"]);
-                
+                options.Address = uri;
             })
             .ConfigureChannel(channelOptions =>
             {
+                var httpsURL = false;
+                if ((uri.Scheme == "http") || (uri.Scheme == "https")){
+                    httpsURL = true;
+                }
                 channelOptions.UnsafeUseInsecureChannelCallCredentials = true;
-                if (string.IsNullOrWhiteSpace(userId))
+                if (string.IsNullOrWhiteSpace(userId) && !httpsURL)
                 {
                     channelOptions.Credentials = ChannelCredentials.Insecure;
                 }
-
+               
 
             })
             .AddCallCredentials((context, metadata) =>

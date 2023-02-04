@@ -19,7 +19,7 @@ spec:
         app: file-cache-client-deploy
     spec:
       containers:
-      - image: venkateshsrini3/file-cache-client:dnslookup-latest-1.0
+      - image: venkateshsrini3/file-cache-client:dnslookup-latest-1.1
         name: file-cache-client
         ports:
         - containerPort: 80
