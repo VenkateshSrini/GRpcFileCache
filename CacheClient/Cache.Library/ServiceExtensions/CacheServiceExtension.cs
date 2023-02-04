@@ -65,18 +65,27 @@ namespace Cache.Library.ServiceExtensions
         public static IServiceCollection AddCacheProxy(
             this IServiceCollection services, IConfiguration configuration)
         {
+            var userId = configuration["CacheService:userId"];
+            var password = configuration["CacheService:password"];
             services.AddGrpcClient<CacheServices.CacheServicesClient>(options =>
             {
                 options.Address = new Uri(configuration["CacheService:url"]);
+                
             })
             .ConfigureChannel(channelOptions =>
             {
                 channelOptions.UnsafeUseInsecureChannelCallCredentials = true;
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    channelOptions.Credentials = ChannelCredentials.Insecure;
+                }
+
+
             })
             .AddCallCredentials((context, metadata) =>
             {
-                var userId = configuration["CacheService:userId"];
-                var password = configuration["CacheService:password"];
+                
+                
                 if (!string.IsNullOrEmpty(userId))
                 {
                     var credential = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{userId}:{password}"));
