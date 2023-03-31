@@ -6,7 +6,8 @@ builder.WebHost.ConfigureKestrel(webOptions =>
     //webOptions.ListenLocalhost(5275, kestrelOptions => {
     //    kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     //});
-    webOptions.ListenAnyIP(5275, kestrelOptions =>
+    var gRpcPort = builder.Configuration.GetValue<int>("http2Port");
+    webOptions.ListenAnyIP(gRpcPort, kestrelOptions =>
     {
         kestrelOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
     });

@@ -5,6 +5,7 @@ metadata:
   labels:
     app: file-cache-deploy
   name: file-cache-deploy
+  namespace: grpc-cache
 spec:
   replicas: 1
   selector:
@@ -22,11 +23,18 @@ spec:
         persistentVolumeClaim:
           claimName: pv-cache-claim
       containers:
-      - image: venkateshsrini3/file-cache
+      - image: venkateshsrini3/file-cache:dns
         name: file-cache
         volumeMounts:
         - name: pv-vol
           mountPath: /app/cacheDir
         ports:
-        - containerPort: 5275
-status: {}
+        - containerPort: 80
+          name: grpc
+        env:
+        - name: "http2Port"
+          value: "80"
+        - name: "podName"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
