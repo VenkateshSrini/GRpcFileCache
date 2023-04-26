@@ -7,7 +7,7 @@ metadata:
   name: file-cache-client-deploy
   namespace: grpc-cache
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: file-cache-client-deploy
@@ -19,7 +19,7 @@ spec:
         app: file-cache-client-deploy
     spec:
       containers:
-      - image: venkateshsrini3/file-cache-client:dnslookup-6
+      - image: venkateshsrini3/file-cache-client:dnslookup-61
         name: file-cache-client
         ports:
         - containerPort: 80

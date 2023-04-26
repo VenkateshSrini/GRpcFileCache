@@ -7,7 +7,7 @@ metadata:
   name: file-cache-deploy
   namespace: grpc-cache
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: file-cache-deploy
@@ -23,7 +23,7 @@ spec:
         persistentVolumeClaim:
           claimName: pv-cache-claim
       containers:
-      - image: venkateshsrini3/file-cache:dns
+      - image: venkateshsrini3/file-cache:dnslg
         name: file-cache
         volumeMounts:
         - name: pv-vol
@@ -38,3 +38,4 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+# nslookup command to test deployment {k exec dnsutils -n grpc-cache -- nslookup file-cache-grpc-service}

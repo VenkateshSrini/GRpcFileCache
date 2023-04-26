@@ -51,6 +51,7 @@ namespace CacheService.Services
                 response.StatusCode = 200;
                 response.Message = "success";
             }
+            LogPodName("Set Cache");
             return Task.FromResult(response);
         }
         public override Task<GetCachedValueResponse> GetCache(GetCachedValueRequest request, ServerCallContext context)
@@ -74,6 +75,7 @@ namespace CacheService.Services
 
                 };
             }
+            LogPodName("Get Cache");
             return Task.FromResult(response);
         }
         public override Task<DeleteCachedResponse> DeleteCache(DeleteCachedValueRequest request, ServerCallContext context)
@@ -97,7 +99,13 @@ namespace CacheService.Services
                     Value = cacheResponse
                 };
             }
+            LogPodName("Delete Cache");
             return Task.FromResult(response);
+        }
+        private void LogPodName(string opration)
+        {
+            var podName = _configuration["podName"];
+            _logger.LogInformation($"Operation name: {opration} Pod Name {podName}");
         }
     }
 }
