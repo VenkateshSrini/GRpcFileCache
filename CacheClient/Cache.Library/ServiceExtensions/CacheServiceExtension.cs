@@ -10,6 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cache.Library.Middlewares;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Grpc.Net.ClientFactory;
 
 namespace Cache.Library.ServiceExtensions
 {
@@ -21,11 +25,20 @@ namespace Cache.Library.ServiceExtensions
             var userId = configuration["CacheService:userId"];
             var password = configuration["CacheService:password"];
             var uri = new Uri(configuration["CacheService:url"]);
-            services.AddGrpcClient<CacheServices.CacheServicesClient>(options =>
+            services.AddHttpContextAccessor();
+            services.AddSingleton<LoggingInterceptor>();
+            if (uri.Scheme.ToLower()=="dns")
+                services.AddSingleton<ResolverFactory>(new DnsResolverFactory(refreshInterval: TimeSpan.FromSeconds(25)));
+            services.AddGrpcClient<CacheServices.CacheServicesClient>((serviceProvider,options)=>
             {
                 options.Address = uri;
+                var httpAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var logger = serviceProvider.GetRequiredService<ILogger<LoggingInterceptor>>();
+                //var registration = new Grpc.Net.ClientFactory.InterceptorRegistration(InterceptorScope.Channel,
+                //    )
             })
-            .ConfigureChannel(channelOptions =>
+            .AddInterceptor<LoggingInterceptor>()
+            .ConfigureChannel((serviceProvider,channelOptions) =>
             {
                 var httpsURL = false;
                 if ((uri.Scheme == "http") || (uri.Scheme == "https"))
@@ -35,10 +48,23 @@ namespace Cache.Library.ServiceExtensions
                 channelOptions.UnsafeUseInsecureChannelCallCredentials = true;
                 if (string.IsNullOrWhiteSpace(userId) && !httpsURL)
                 {
+                    
+                    var methodConfig = new MethodConfig
+                    {
+                        Names = { MethodName.Default },
+                        RetryPolicy = new RetryPolicy
+                        {
+                            MaxAttempts = 5,
+                            InitialBackoff = TimeSpan.FromSeconds(1),
+                            MaxBackoff = TimeSpan.FromSeconds(5),
+                            BackoffMultiplier = 1.5,
+                            RetryableStatusCodes = { StatusCode.Unavailable }
+                        }
+                    };
                     channelOptions.Credentials = ChannelCredentials.Insecure;
+                    channelOptions.ServiceConfig = new ServiceConfig { LoadBalancingConfigs = { new RoundRobinConfig() }, MethodConfigs = { methodConfig } };
+                    channelOptions.ServiceProvider = serviceProvider;
                 }
-
-
             })
             .AddCallCredentials((context, metadata) =>
             {

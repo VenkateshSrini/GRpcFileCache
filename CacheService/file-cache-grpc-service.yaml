@@ -8,9 +8,9 @@ metadata:
   namespace: grpc-cache
 spec:
   ports:
-  - port: 5275
+  - port: 80
     protocol: TCP
-    targetPort: 80
+    targetPort: 5275
   selector:
     app: file-cache-deploy
   clusterIP: None

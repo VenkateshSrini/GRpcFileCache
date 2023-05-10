@@ -21,6 +21,7 @@ namespace Cache.Library.CacheWrapper
                 Value = value,
                 CacheDurationInMinutes = timePeriod
             };
+            
             var response = _cacheClient.SetCache(request);
             return new CacheResponse
             {

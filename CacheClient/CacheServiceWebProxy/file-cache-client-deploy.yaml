@@ -7,7 +7,7 @@ metadata:
   name: file-cache-client-deploy
   namespace: grpc-cache
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: file-cache-client-deploy
@@ -19,12 +19,12 @@ spec:
         app: file-cache-client-deploy
     spec:
       containers:
-      - image: venkateshsrini3/file-cache-client:dnslookup-61
+      - image: venkateshsrini3/file-cache-client:dnslookup-66
         name: file-cache-client
         ports:
         - containerPort: 80
         env:
         - name: CacheService__url
-          value: dns:///file-cache-grpc-service.grpc-cache.svc.cluster.local
+          value: dns:///file-cache-grpc-service.grpc-cache.svc.cluster.local:5275
         - name: DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT
           value: "true"

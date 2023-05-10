@@ -29,11 +29,11 @@ spec:
         - name: pv-vol
           mountPath: /app/cacheDir
         ports:
-        - containerPort: 80
+        - containerPort: 5275
           name: grpc
         env:
         - name: "http2Port"
-          value: "80"
+          value: "5275"
         - name: "podName"
           valueFrom:
             fieldRef:
