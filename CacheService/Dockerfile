@@ -1,24 +1,25 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
 WORKDIR /app
-EXPOSE 5275
-EXPOSE 443
-EXPOSE 443
-EXPOSE 80
+EXPOSE 8080
+EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["CacheService.csproj", "."]
-RUN dotnet restore "./CacheService.csproj"
+COPY ["binary.cache.service.csproj", "."]
+RUN dotnet restore "./binary.cache.service.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "CacheService.csproj" -c Release -o /app/build
+RUN dotnet build "./binary.cache.service.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "CacheService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./binary.cache.service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "CacheService.dll"]
+ENTRYPOINT ["dotnet", "binary.cache.service.dll"]

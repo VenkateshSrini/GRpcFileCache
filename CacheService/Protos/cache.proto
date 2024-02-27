@@ -1,53 +1,122 @@
 syntax = "proto3";
-import "google/protobuf/duration.proto";  
-package cache.v1;
+import "Protos/google/api/annotations.proto";
+option csharp_namespace = "binary.cache.service";
 
-option csharp_namespace = "CacheService.Caching";
+package cache.v2;
 
-
-message StoreCacheRequest{
+message CacheMessage{
 	string key=1;
-	string value=2;
-	int32 cache_duration_in_minutes=3;
-}
-message StoreCacheResponse{
-	string key=1;
-	int32 status_code=2;
-	string message=3;
-}
-service CacheServices{
-	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse);
-	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse);
-	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse);
-}
-message GetCachedValueRequest{
-	string key=1;
-}
-message GetCachedValueResponse{
-	string key=1;
-	oneof get_result{
-		GetCachedValue cached_value=3;
-		CacheError cache_retrival_error=4;
-	}
-}
-message GetCachedValue{
-	string value=1;
-}
-message DeleteCachedValueRequest{
-	string key=1;
-}
-message DeleteCachedResponse{
-	string key=1;
-	oneof delete_result{
-		DeleteCachedValue delete_response=2;
-		CacheError cache_deletion_error=3;
-	}
-}
-message DeleteCachedValue{
-	string value=1;
-	string message=2;
+	string subkey=2;
+	bytes value=3;
+	int32 cache_duration_in_seconds=4;
 }
 message CacheError{
 	int32 error_code=1;
 	string message=2;
 }
+
+message StoreCacheRequest{
+	CacheMessage cacheMessage=1;
+}
+message StoreCacheResponse{
+	string key=1;
+	string subkey=2;
+	int32 status_code=3;
+	string message=4;
+}
+
+message GetCachedValueRequest{
+	string key=1;
+	string subkey=2;
+}
+message GetCachedValueResponse{
+	string key=1;
+	string subkey=2;
+	oneof get_result{
+		GetCachedValue cached_value=3;
+		CacheError cache_retrival_error=4;
+		SubkeyValuePairResponse subkey_value_pairs=5;
+	}
+}
+message GetCachedValue{
+	bytes value=1;
+}
+message SubkeyValuePair{
+	string subkey=1;
+	bytes value=2;
+}
+message SubkeyValuePairResponse{
+	repeated SubkeyValuePair subkey_value_pairs=1;
+}
+message DeleteCachedValueRequest{
+	string key=1;
+	string subkey=2;
+}
+message GetAllSubkeysRequest{
+	string key=1;
+}
+message GetAllSubkeysResponse{
+	repeated string subkeys=2;
+}
+
+message DeleteCachedResponse{
+	string key=1;
+	string subkey=2;
+	oneof delete_result{
+		DeleteCachedValue delete_response=3;
+		CacheError cache_deletion_error=4;
+	}
+}
+message DeleteCachedValue{
+		string message=1;
+}
+message IncrRequestMessage{
+	string key=1;
+	string subkey=2;
+	int64 increment_value=3;
+}
+message CountIncrResponse{
+	int64 long_value=3;
+}
+// The greeting service definition.
+service Cache{
+	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse){
+		option (google.api.http) = {
+			post: "/v1/cache"
+			body: "cacheMessage"
+		};
+	};
+	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse){
+		option (google.api.http) = {
+			get: "/v1/cache/{key}"
+			additional_bindings {
+				get: "/v1/cache/{key}/{subkey}"
+			}
+		};
+	};
+	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse){
+		option (google.api.http) = {
+			delete: "/v1/cache/{key}"
+			additional_bindings {
+				delete: "/v1/cache/{key}/{subkey}"
+			}
+		};
+	};
+	rpc GetAllSubkeys(GetAllSubkeysRequest) returns(GetAllSubkeysResponse){
+		option (google.api.http) = {
+			get: "/v1/cache/{key}/subkeys"
+		};
+	};
+	rpc GetSubkeyCount(GetCachedValueRequest) returns(CountIncrResponse){
+		option (google.api.http) = {
+			get: "/v1/cache/{key}"
+		};
+	};
+	rpc Incr(IncrRequestMessage) returns(CountIncrResponse){
+		option (google.api.http) = {
+			post: "/v1/cache/incr"
+			body: "increment_value"
+		};
+	};
+}
+

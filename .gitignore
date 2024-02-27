@@ -10,3 +10,4 @@
 /CacheService/cacheDir
 /CacheService/obj
 *.user
+/CacheService/bin/Debug/net8.0
