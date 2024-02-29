@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: file-cache-deploy
+  name: file-cache-deploy
+  namespace: grpc-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-cache-deploy
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: file-cache-deploy
+    spec:
+      volumes:
+      - name: pv-vol
+        persistentVolumeClaim:
+          claimName: pv-cache-claim
+      containers:
+      - image: venkateshsrini3/bfile-cache-dns:latest
+        name: file-cache
+        volumeMounts:
+        - name: pv-vol
+          mountPath: /app/cacheDir
+        ports:
+        - containerPort: 80
+          name: grpc
+        - containerPort: 7007
+          name: http
+        env:
+        - name: "http2Port"
+          value: "80"
+        - name: "http1Port"
+          value: "7007"
+        - name: "podName"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name

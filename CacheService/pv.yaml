@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-cache-volume
+  namespace: grpc-cache
+  labels:
+    type: local
+spec:
+  storageClassName: hostpath
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/run/desktop/mnt/c/CarryCase/Venkatesh/M2c/cache"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pv-cache-claim
+  namespace: grpc-cache
+spec:
+  volumeName: pv-cache-volume
+  storageClassName: hostpath
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
