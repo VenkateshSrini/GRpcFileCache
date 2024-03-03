@@ -1,5 +1,6 @@
 using binary.cache.service;
 using binary.cache.service.domain;
+using binary.cache.service.LRUCache;
 using binary.cache.service.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,8 @@ builder.WebHost.ConfigureKestrel(webOptions =>
 builder.Services.AddGrpc()
                 .AddJsonTranscoding();
 builder.Services.AddScoped<ICacheManagement, CacheManagement>();
+builder.Services.AddSingleton<LRUCache<byte[]>>();
+builder.Services.AddSingleton<FolderWatcherService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
-﻿using binary.cache.service.Utils;
+﻿using binary.cache.service.LRUCache;
+using binary.cache.service.Utils;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Polly;
 using System.IO;
@@ -13,14 +14,21 @@ namespace binary.cache.service.domain
         private readonly string _cacheMetadata = "metadata.bin";
         private readonly ILogger<CacheManagement> _logger;
         private readonly IConfiguration _configuration;
-        public CacheManagement(ILogger<CacheManagement> logger, IConfiguration configuration)
+        private readonly LRUCache<byte[]> _lRUCache;
+        private readonly FolderWatcherService _folderWatcherService ;
+        public CacheManagement(ILogger<CacheManagement> logger, 
+            IConfiguration configuration, LRUCache<byte[]> lRUCache, 
+            FolderWatcherService folderWatcherService)
         {
             _logger=logger;
             _configuration=configuration;
-            if(!Directory.Exists(_cachePath))
+            _lRUCache=lRUCache;
+            _folderWatcherService=folderWatcherService;
+            if (!Directory.Exists(_cachePath))
             {
                 Directory.CreateDirectory(_cachePath);
             }
+            _folderWatcherService.WatchFolder(_cachePath, _lRUCache);
         }
         public byte[] Get(string key, string subKey)
         {
