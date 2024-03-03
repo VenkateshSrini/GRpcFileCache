@@ -78,6 +78,17 @@ message IncrRequestMessage{
 message CountIncrResponse{
 	int64 long_value=3;
 }
+message SetTTLRequestMessage{
+	string key=1;
+	string subkey=2;
+	int32 cache_duration_in_seconds=3;
+}
+message SetTTLResponseMessage{
+	string key=1;
+	string subkey=2;
+	int32 status_code=3;
+	string message=4;
+}
 // The greeting service definition.
 service Cache{
 	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse){
@@ -116,6 +127,12 @@ service Cache{
 		option (google.api.http) = {
 			post: "/v1/cache/incr"
 			body: "increment_value"
+		};
+	};
+	rpc SetTTL(SetTTLRequestMessage) returns(SetTTLResponseMessage){
+		option (google.api.http) = {
+			post: "/v1/cache/ttl"
+			body: "cache_duration_in_seconds"
 		};
 	};
 }

@@ -23,6 +23,7 @@ builder.Services.AddGrpc()
 builder.Services.AddScoped<ICacheManagement, CacheManagement>();
 builder.Services.AddSingleton<LRUCache<byte[]>>();
 builder.Services.AddSingleton<FolderWatcherService>();
+builder.Services.AddHostedService<FileCleanupService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

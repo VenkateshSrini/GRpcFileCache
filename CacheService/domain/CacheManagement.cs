@@ -8,10 +8,10 @@ namespace binary.cache.service.domain
 {
     public class CacheManagement : ICacheManagement
     {
-        private readonly string _cachePath = "cacheDir";
-        private readonly string _cacheExtension = ".cache";
-        private readonly string _cacheFile = "data";
-        private readonly string _cacheMetadata = "metadata.bin";
+        private readonly string _cachePath ;
+        private readonly string _cacheExtension ;
+        private readonly string _cacheFile  ;
+        private readonly string _cacheMetadata ;
         private readonly ILogger<CacheManagement> _logger;
         private readonly IConfiguration _configuration;
         private readonly LRUCache<byte[]> _lRUCache;
@@ -24,6 +24,10 @@ namespace binary.cache.service.domain
             _configuration=configuration;
             _lRUCache=lRUCache;
             _folderWatcherService=folderWatcherService;
+            _cachePath = _configuration.GetValue<string>("CachePath");
+            _cacheExtension = _configuration.GetValue<string>("CacheExtension");
+            _cacheFile = _configuration.GetValue<string>("CacheFile");
+            _cacheMetadata = _configuration.GetValue<string>("CacheMetadata");
             if (!Directory.Exists(_cachePath))
             {
                 Directory.CreateDirectory(_cachePath);
@@ -42,15 +46,22 @@ namespace binary.cache.service.domain
             }
             if (File.Exists($"{_cachePath}/{key}/{subKey}/{_cacheFile}.{_cacheExtension}"))
             {
-                return GetCacheValues($"{_cachePath}/{key}/{subKey}");
+                return GetCacheValues($"{_cachePath}/{key}/{subKey}", key,subKey);
             }
             return Array.Empty<byte>();
         }
-        private byte[] GetCacheValues(string path)
+        private byte[] GetCacheValues(string path, string key, string subKey)
         {
+            var cacheValue= _lRUCache.Get(key, subKey);
+            if(cacheValue!=null)
+            {
+                return cacheValue;
+            }
             var cacheMetadata = GetCacheMetadata(path);
             
-            if ( DateTime.Now.Subtract(cacheMetadata.LastAccessed).Seconds > cacheMetadata.TimeToLiveInSeconds)
+            if ((cacheMetadata.TimeToLiveInSeconds> -1) &&
+               (DateTime.Now.Subtract(cacheMetadata.LastAccessed).Seconds 
+                            > cacheMetadata.TimeToLiveInSeconds))
             {
                 Directory.Delete(path, true);
                 return Array.Empty<byte>();
@@ -67,7 +78,6 @@ namespace binary.cache.service.domain
             {
                 return new CacheMetadata { 
                     LastAccessed = DateTime.Now,
-                    TimeToLiveInSeconds=_configuration.GetValue<int>("TimePeriodinMinutes")*60,
                     KeyCounter=0,
                     Path=path
                 };
@@ -183,7 +193,7 @@ namespace binary.cache.service.domain
             var directoryinfo = new DirectoryInfo($"{_cachePath}/{key}");
             return directoryinfo.GetDirectories()
                     .Select(dir => new Tuple<string, byte[]>(dir.Name, 
-                                                        GetCacheValues($"{_cachePath}/{key}/{dir.Name}")))
+                                                        GetCacheValues($"{_cachePath}/{key}/{dir.Name}", key, dir.Name)))
                     .ToList();
         }
 
@@ -203,8 +213,11 @@ namespace binary.cache.service.domain
             }
             var cacheDir = $"{_cachePath}/{key}/{subKey}";
             var cacheMetadata = GetCacheMetadata(cacheDir);
-            if (timeToLive > 0)
+            if (timeToLive != 0)
                 cacheMetadata.TimeToLiveInSeconds = timeToLive;
+            else if (timeToLive == 0)
+                cacheMetadata.TimeToLiveInSeconds = _configuration.GetValue<int>("TimePeriodinMinutes")
+                                                    * 60;
             cacheMetadata.LastAccessed = DateTime.Now;
             cacheMetadata.Path = $"{cacheDir}/{_cacheFile}.{_cacheExtension}";
             var memoryStream = new MemoryStream(value);
@@ -239,12 +252,35 @@ namespace binary.cache.service.domain
             
             cacheMetadata.KeyCounter += value;
             cacheMetadata.LastAccessed = DateTime.Now;
+            cacheMetadata.TimeToLiveInSeconds=-1;
             SetCacheMetadata(cacheDir, cacheMetadata);
             return cacheMetadata.KeyCounter;
 
 
         }
-        
 
+        public bool SetExpiry(string key, string subKey, int timeToLiveInSeconds)
+        {
+            var cacheMetadata = GetCacheMetadata($"{_cachePath}/{key}/{subKey}");
+            cacheMetadata.TimeToLiveInSeconds = timeToLiveInSeconds;
+            SetCacheMetadata($"{_cachePath}/{key}/{subKey}", cacheMetadata);
+            return true;
+        }
+
+        public bool SetExpiry(string key, int timeToLiveInSeconds)
+        {
+            var directoryinfo = new DirectoryInfo($"{_cachePath}/{key}");
+            if(directoryinfo.Exists)
+            {
+                foreach (var dir in directoryinfo.GetDirectories())
+                {
+                    var cacheMetadata = GetCacheMetadata(dir.FullName);
+                    cacheMetadata.TimeToLiveInSeconds = timeToLiveInSeconds;
+                    SetCacheMetadata(dir.FullName, cacheMetadata);
+                }
+                return true;
+            }
+            return false;
+        }
     }
 }

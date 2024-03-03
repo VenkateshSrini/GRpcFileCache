@@ -19,14 +19,28 @@
             watcher.Changed += (source, e) =>
             {
                 // Update the cache when a file is changed
-                var fileInfo = new FileInfo(e.FullPath);
-                var subkey = fileInfo.Directory?.Name;
-                var key = fileInfo.Directory?.Parent?.Name;
-                var bytes = File.ReadAllBytes(e.FullPath);
-                var sizeInKB = bytes.Length/1024;
-                var sizeInMB = sizeInKB/1024;
-                _logger.LogInformation($"File {e.FullPath} has been changed, updating cache");
-                cache.Add(key, subkey, bytes, sizeInMB);
+                if ((e.ChangeType== WatcherChangeTypes.Created)
+                || (e.ChangeType == WatcherChangeTypes.Changed) 
+                || (e.ChangeType== WatcherChangeTypes.Renamed)
+                )
+                {
+                    var fileInfo = new FileInfo(e.FullPath);
+                    var subkey = fileInfo.Directory?.Name;
+                    var key = fileInfo.Directory?.Parent?.Name;
+                    var bytes = File.ReadAllBytes(e.FullPath);
+                    var sizeInKB = bytes.Length / 1024;
+                    var sizeInMB = sizeInKB / 1024;
+                    _logger.LogInformation($"File {e.FullPath} has been changed, updating cache");
+                    cache.Add(key, subkey, bytes, sizeInMB);
+                }
+                else if (e.ChangeType == WatcherChangeTypes.Deleted)
+                {
+                    var fileInfo = new FileInfo(e.FullPath);
+                    var subkey = fileInfo.Directory?.Name;
+                    var key = fileInfo.Directory?.Parent?.Name;
+                    _logger.LogInformation($"File {e.FullPath} has been deleted, removing from cache");
+                    cache.Remove(key, subkey);
+                }
                 
             };
 

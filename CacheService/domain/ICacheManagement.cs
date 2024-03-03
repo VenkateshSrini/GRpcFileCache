@@ -57,5 +57,20 @@
         /// the defaut value is 1</param>
         /// <returns>retruns the </returns>
         long IncrementKey(string key, string subKey, long value=1);
+        /// <summary>
+        /// Set the expiry for the key and subkey
+        /// </summary>
+        /// <param name="key">Main Key</param>
+        /// <param name="subKey">Sub key</param>
+        /// <param name="timeToLiveInSeconds"> time value in Seconds</param>
+        /// <returns></returns>
+        bool SetExpiry(string key, string subKey, int timeToLiveInSeconds);
+        /// <summary>
+        /// Set the expiry for the key
+        /// </summary>
+        /// <param name="key">Main Key</param>
+        /// <param name="timeToLiveInSeconds">time value in Second</param>
+        /// <returns></returns>
+        bool SetExpiry(string key, int timeToLiveInSeconds);
     }
 }

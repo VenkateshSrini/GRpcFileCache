@@ -4,16 +4,23 @@ using Grpc.Core;
 
 namespace binary.cache.service.Services
 {
-    public class CacheService: Cache.CacheBase
+    public class CacheService: Cache.CacheBase,IDisposable
     {
         private readonly ILogger<CacheService> _logger;
         private readonly ICacheManagement _cacheManagement;
         private readonly IConfiguration _configuration;
-        public CacheService(ILogger<CacheService> logger, ICacheManagement cacheManagement, IConfiguration configuration)
+        private readonly IHostedService _fileCleanupService;
+        private readonly CancellationToken fileCleanerToken = new CancellationToken();
+        public CacheService(ILogger<CacheService> logger, 
+            ICacheManagement cacheManagement, 
+            IConfiguration configuration, IEnumerable<IHostedService> backgroundServices)
         {
             _logger = logger;
             _cacheManagement = cacheManagement;
             _configuration = configuration;
+            _fileCleanupService = backgroundServices.FirstOrDefault(service => service is FileCleanupService);
+            _fileCleanupService?.StartAsync(fileCleanerToken)
+                               .GetAwaiter().GetResult();
         }
         public override Task<GetCachedValueResponse> GetCache(GetCachedValueRequest request, ServerCallContext context)
         {
@@ -250,8 +257,10 @@ namespace binary.cache.service.Services
             var podName = _configuration["podName"];
             _logger.LogInformation($"Operation name: {operation} Pod Name {podName}");
         }
-        
 
-
+        public void Dispose()
+        {
+            _fileCleanupService?.StopAsync(fileCleanerToken).Wait();
+        }
     }
 }

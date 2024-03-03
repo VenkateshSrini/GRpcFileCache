@@ -77,7 +77,11 @@ public partial class LRUCache<TValue>
             Add(key, subKey, value, size);
         }
     }
-
+    public void Remove(string key, string subKey)
+    {
+        var cacheKey = $"{key}{delimiter}{subKey}";
+        Remove(cacheKey);
+    }
     private void Remove(string key)
     {
         if (cache.TryGetValue(key, out var node))
