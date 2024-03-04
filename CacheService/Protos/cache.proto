@@ -89,6 +89,23 @@ message SetTTLResponseMessage{
 	int32 status_code=3;
 	string message=4;
 }
+message SetCacheUIRequest{
+	string key=1;
+	string subkey=2;
+	string value=3;
+	int32 cache_duration_in_seconds=4;
+}
+message GetValueUIResponse{
+	string key=1;
+	string subkey=2;
+	oneof get_result{
+		GetCachedValueUI cached_value=3;
+		CacheError cache_retrival_error=4;
+	}
+}
+message GetCachedValueUI{
+	string cache_content=1;
+}
 // The greeting service definition.
 service Cache{
 	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse){
@@ -133,6 +150,17 @@ service Cache{
 		option (google.api.http) = {
 			post: "/v1/cache/ttl"
 			body: "cache_duration_in_seconds"
+		};
+	};
+	rpc SetCacheUI(SetCacheUIRequest) returns(StoreCacheResponse){
+		option (google.api.http) = {
+			post: "/v1/cache/ui"
+			body: "cacheMessage"
+		};
+	};
+	rpc GetCacheUI(GetCachedValueRequest) returns(GetValueUIResponse){
+		option (google.api.http) = {
+			get: "/v1/cache/ui/{key}/{subkey}"
 		};
 	};
 }

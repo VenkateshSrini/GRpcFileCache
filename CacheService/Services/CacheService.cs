@@ -252,6 +252,47 @@ namespace binary.cache.service.Services
                 throw;
             }
         }
+        public override Task<SetTTLResponseMessage> SetTTL(SetTTLRequestMessage request, ServerCallContext context)
+        {
+            var response = new SetTTLResponseMessage();
+            bool result=false;
+            try
+            {
+                if (string.IsNullOrEmpty(request.Key))
+                {
+                    throw new ArgumentNullException("key cannot be null or empty");
+                }
+                if (!string.IsNullOrWhiteSpace(request.Key)&&(string.IsNullOrEmpty(request.Subkey)))
+                {
+                    result = _cacheManagement.SetExpiry(request.Key, request.CacheDurationInSeconds);
+
+                }
+                if (!string.IsNullOrWhiteSpace(request.Key) && (!string.IsNullOrEmpty(request.Subkey)))
+                {
+                    result = _cacheManagement.SetExpiry(request.Key, request.Subkey, request.CacheDurationInSeconds);
+                    response.Subkey = request.Subkey;
+
+                }
+
+                response.Key = request.Key;
+                
+                
+                response.StatusCode = result ? 200 : 500;
+                response.Message = result ? "TTL set successfully" : "Error in setting TTL";
+                LogPodName("Set TTL");
+                return Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
+                response.Key = request.Key;
+                response.Subkey = request.Subkey;
+                response.StatusCode = 500;
+                response.Message = ex.Message;
+                LogPodName("Set TTL with Exception");
+                return Task.FromResult(response);
+            }
+        }
         private void LogPodName(string operation)
         {
             var podName = _configuration["podName"];
