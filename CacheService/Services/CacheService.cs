@@ -1,5 +1,6 @@
 ﻿using binary.cache.service.domain;
 using Grpc.Core;
+using System.Text;
 
 
 namespace binary.cache.service.Services
@@ -292,6 +293,54 @@ namespace binary.cache.service.Services
                 LogPodName("Set TTL with Exception");
                 return Task.FromResult(response);
             }
+        }
+        public override Task<StoreCacheResponse> SetCacheUI(SetCacheUIRequest request, ServerCallContext context)
+        {
+            var response = new StoreCacheResponse();
+            try
+            {
+                if (string.IsNullOrEmpty(request?.Key))
+                {
+                    throw new ArgumentNullException("Key cannot be null or empty");
+                }
+                if (string.IsNullOrEmpty(request?.Subkey))
+                {
+                    throw new ArgumentNullException("Subkey cannot be null or empty");
+                }
+                if (string.IsNullOrEmpty(request.Value))
+                {
+                    throw new ArgumentNullException("Value cannot be null or empty");
+                }
+                byte[] contentBytes = Encoding.UTF8.GetBytes(request.Value);
+                var result = _cacheManagement.Set(request.Key, request.Subkey, contentBytes);
+                if (!result)
+                {
+                    response.Key = request.Key;
+                    response.Subkey = request.Subkey;
+                    response.StatusCode = 500;
+                    response.Message = "Error in setting the cache";
+                }
+                else
+                {
+                    response.Key = request.Key;
+                    response.Subkey = request.Subkey;
+                    response.StatusCode = 200;
+                    response.Message = "Cache set successfully";
+                }
+                LogPodName("Set Cache UI");
+                return Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
+                response.Key = request.Key;
+                response.Subkey = request.Subkey;
+                response.StatusCode = 500;
+                response.Message = ex.Message;
+                LogPodName("Set Cache UI with Exception");
+                return Task.FromResult(response);
+            }   
+            
         }
         private void LogPodName(string operation)
         {
