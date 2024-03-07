@@ -5,15 +5,15 @@ using System.Text;
 
 namespace binary.cache.service.Services
 {
-    public class CacheService: Cache.CacheBase,IDisposable
+    public class CacheService : Cache.CacheBase, IDisposable
     {
         private readonly ILogger<CacheService> _logger;
         private readonly ICacheManagement _cacheManagement;
         private readonly IConfiguration _configuration;
         private readonly IHostedService _fileCleanupService;
         private readonly CancellationToken fileCleanerToken = new CancellationToken();
-        public CacheService(ILogger<CacheService> logger, 
-            ICacheManagement cacheManagement, 
+        public CacheService(ILogger<CacheService> logger,
+            ICacheManagement cacheManagement,
             IConfiguration configuration, IEnumerable<IHostedService> backgroundServices)
         {
             _logger = logger;
@@ -32,7 +32,7 @@ namespace binary.cache.service.Services
                 {
                     throw new ArgumentNullException("Key cannot be null or empty");
                 }
-                if ((request.Key != string.Empty) && (request.Subkey==string.Empty))
+                if ((request.Key != string.Empty) && (request.Subkey == string.Empty))
                 {
                     var scanResponse = _cacheManagement.Scan(request.Key);
                     response.SubkeyValuePairs = new SubkeyValuePairResponse();
@@ -87,11 +87,11 @@ namespace binary.cache.service.Services
                 {
                     throw new ArgumentNullException("Subkey cannot be null or empty");
                 }
-                if ((request?.CacheMessage?.Value?.IsEmpty)==true)
+                if ((request?.CacheMessage?.Value?.IsEmpty) == true)
                 {
                     throw new ArgumentNullException("Value cannot be null or empty");
                 }
-                var result =_cacheManagement.Set(request.CacheMessage.Key, request.CacheMessage.Subkey, request.CacheMessage.Value.ToByteArray());
+                var result = _cacheManagement.Set(request.CacheMessage.Key, request.CacheMessage.Subkey, request.CacheMessage.Value.ToByteArray());
                 if (!result)
                 {
                     response.Key = request.CacheMessage.Key;
@@ -119,11 +119,11 @@ namespace binary.cache.service.Services
                 LogPodName("Set Cache with Exception");
                 return Task.FromResult(response);
             }
-            
+
         }
         public override Task<DeleteCachedResponse> DeleteCache(DeleteCachedValueRequest request, ServerCallContext context)
         {
-            var response = new DeleteCachedResponse() { Key=request.Key} ;
+            var response = new DeleteCachedResponse() { Key = request.Key };
             try
             {
                 if (string.IsNullOrEmpty(request.Key))
@@ -135,7 +135,7 @@ namespace binary.cache.service.Services
                     var result = _cacheManagement.Remove(request.Key);
                     if (!result)
                     {
-                        response.CacheDeletionError= new CacheError();
+                        response.CacheDeletionError = new CacheError();
                         response.CacheDeletionError.ErrorCode = 500;
                         response.CacheDeletionError.Message = "Error in deleting the cache";
                     }
@@ -179,7 +179,7 @@ namespace binary.cache.service.Services
                 response.CacheDeletionError.Message = ex.Message;
                 LogPodName("Delete Cache with Exception");
                 return Task.FromResult(response);
-            }   
+            }
         }
         public override Task<GetAllSubkeysResponse> GetAllSubkeys(GetAllSubkeysRequest request, ServerCallContext context)
         {
@@ -194,9 +194,9 @@ namespace binary.cache.service.Services
                 if (result?.Count > 0)
                 {
                     response.Subkeys.AddRange(result);
-                   
+
                 }
-                
+
                 LogPodName("Get All Subkeys");
                 return Task.FromResult(response);
             }
@@ -204,8 +204,8 @@ namespace binary.cache.service.Services
             {
                 _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
                 LogPodName("Get All Subkeys with Exception");
-                throw ;
-            }   
+                throw;
+            }
         }
         public override Task<CountIncrResponse> GetSubkeyCount(GetCachedValueRequest request, ServerCallContext context)
         {
@@ -241,7 +241,7 @@ namespace binary.cache.service.Services
                 {
                     throw new ArgumentNullException("Subkey cannot be null or empty");
                 }
-                var result = _cacheManagement.IncrementKey(request.Key, request.Subkey,request.IncrementValue);
+                var result = _cacheManagement.IncrementKey(request.Key, request.Subkey, request.IncrementValue);
                 response.LongValue = result;
                 LogPodName("Incr");
                 return Task.FromResult(response);
@@ -256,14 +256,14 @@ namespace binary.cache.service.Services
         public override Task<SetTTLResponseMessage> SetTTL(SetTTLRequestMessage request, ServerCallContext context)
         {
             var response = new SetTTLResponseMessage();
-            bool result=false;
+            bool result = false;
             try
             {
                 if (string.IsNullOrEmpty(request.Key))
                 {
                     throw new ArgumentNullException("key cannot be null or empty");
                 }
-                if (!string.IsNullOrWhiteSpace(request.Key)&&(string.IsNullOrEmpty(request.Subkey)))
+                if (!string.IsNullOrWhiteSpace(request.Key) && (string.IsNullOrEmpty(request.Subkey)))
                 {
                     result = _cacheManagement.SetExpiry(request.Key, request.CacheDurationInSeconds);
 
@@ -276,8 +276,8 @@ namespace binary.cache.service.Services
                 }
 
                 response.Key = request.Key;
-                
-                
+
+
                 response.StatusCode = result ? 200 : 500;
                 response.Message = result ? "TTL set successfully" : "Error in setting TTL";
                 LogPodName("Set TTL");
@@ -339,7 +339,48 @@ namespace binary.cache.service.Services
                 response.Message = ex.Message;
                 LogPodName("Set Cache UI with Exception");
                 return Task.FromResult(response);
-            }   
+            }
+
+        }
+        public override Task<GetValueUIResponse> GetCacheUI(GetCachedValueRequest request, ServerCallContext context)
+        {
+            var response = new GetValueUIResponse();
+            try
+            {
+                if (string.IsNullOrEmpty(request.Key))
+                {
+                    throw new ArgumentNullException("Key cannot be null or empty");
+                }
+                if (string.IsNullOrWhiteSpace(request.Subkey))
+                {
+                    throw new ArgumentNullException("Key cannot be null or empty");
+                }
+                else if ((request.Key != string.Empty) && (request.Subkey != string.Empty))
+                {
+                    var keySubkeyResponse = _cacheManagement.Get(request.Key, request.Subkey);
+                    response.CachedValue = new GetCachedValueUI();
+                    response.CachedValue.CacheContent = Encoding.UTF8.GetString(keySubkeyResponse);
+
+                }
+                else
+                {
+                    response.CacheRetrivalError = new CacheError();
+                    response.CacheRetrivalError.Message = "Key and Subkey pair cannot be found";
+                    response.CacheRetrivalError.ErrorCode = 404;
+
+                }
+                LogPodName("Get Cache UI");
+                return Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
+                response.CacheRetrivalError = new CacheError();
+                response.CacheRetrivalError.Message = ex.Message;
+                response.CacheRetrivalError.ErrorCode = 500;
+                LogPodName("Get Cache UI with Exception");
+                return Task.FromResult(response);
+            }
             
         }
         private void LogPodName(string operation)
