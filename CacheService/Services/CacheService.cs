@@ -294,7 +294,7 @@ namespace binary.cache.service.Services
                 return Task.FromResult(response);
             }
         }
-        public override Task<StoreCacheResponse> SetCacheUI(SetCacheUIRequest request, ServerCallContext context)
+        public override Task<StoreCacheResponse> SetCacheString(SetCacheStringRequest request, ServerCallContext context)
         {
             var response = new StoreCacheResponse();
             try
@@ -342,9 +342,9 @@ namespace binary.cache.service.Services
             }
 
         }
-        public override Task<GetValueUIResponse> GetCacheUI(GetCachedValueRequest request, ServerCallContext context)
+        public override Task<GetValueStringResponse> GetCacheString(GetCachedValueRequest request, ServerCallContext context)
         {
-            var response = new GetValueUIResponse();
+            var response = new GetValueStringResponse();
             try
             {
                 if (string.IsNullOrEmpty(request.Key))

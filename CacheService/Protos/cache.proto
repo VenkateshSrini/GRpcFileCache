@@ -89,13 +89,13 @@ message SetTTLResponseMessage{
 	int32 status_code=3;
 	string message=4;
 }
-message SetCacheUIRequest{
+message SetCacheStringRequest{
 	string key=1;
 	string subkey=2;
 	string value=3;
 	int32 cache_duration_in_seconds=4;
 }
-message GetValueUIResponse{
+message GetValueStringResponse{
 	string key=1;
 	string subkey=2;
 	oneof get_result{
@@ -152,13 +152,13 @@ service Cache{
 			body: "cache_duration_in_seconds"
 		};
 	};
-	rpc SetCacheUI(SetCacheUIRequest) returns(StoreCacheResponse){
+	rpc SetCacheString(SetCacheStringRequest) returns(StoreCacheResponse){
 		option (google.api.http) = {
 			post: "/v1/cache/ui"
 			body: "cacheMessage"
 		};
 	};
-	rpc GetCacheUI(GetCachedValueRequest) returns(GetValueUIResponse){
+	rpc GetCacheString(GetCachedValueRequest) returns(GetValueStringResponse){
 		option (google.api.http) = {
 			get: "/v1/cache/ui/{key}/{subkey}"
 		};
