@@ -113,7 +113,7 @@ namespace binary.cache.service.domain
                     result = true;
                 }
             });
-
+            _logger.LogError($"Error in writing to file {filePath}. The file is locked by some other process");
             return result;
         }
         public long GetSubkeyCount(string key)
