@@ -10,7 +10,7 @@ spec:
   ports:
   - port: 5275
     protocol: TCP
-    targetPort: 80
+    targetPort: 5275
   selector:
     app: file-cache-deploy
   clusterIP: None

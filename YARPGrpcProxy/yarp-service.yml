@@ -1,0 +1,12 @@
+﻿apiVersion: v1
+kind: Service
+metadata:
+  name: yarp-grpc-proxy
+spec:
+  selector:
+    app: yarp-grpc-proxy
+  ports:
+    - protocol: TCP
+      port: 6007
+      targetPort: 8080
+  type: LoadBalancer

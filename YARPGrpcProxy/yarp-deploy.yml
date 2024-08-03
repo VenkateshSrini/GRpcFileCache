@@ -1,0 +1,27 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yarp-grpc-proxy
+  namespace: grpc-cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yarp-grpc-proxy
+  template:
+    metadata:
+      labels:
+        app: yarp-grpc-proxy
+    spec:
+      containers:
+      - name: yarp-grpc-proxy
+        image: venkateshsrini3/yarp-grpc-proxy:1.0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: Kubernetes__HeadlessServiceName
+          value: "file-cache-grpc-service"
+        - name: spring__cloud__kubernetes__namespace
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace

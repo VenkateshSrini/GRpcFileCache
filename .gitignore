@@ -11,3 +11,5 @@
 /CacheService/obj
 *.user
 /CacheService/bin/Debug/net8.0
+/YARPGrpcProxy/bin/Debug/net8.0
+/YARPGrpcProxy/obj
