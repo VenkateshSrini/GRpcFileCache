@@ -233,15 +233,15 @@ namespace binary.cache.service.Services
             CountIncrResponse response = new CountIncrResponse();
             try
             {
-                if (string.IsNullOrEmpty(request.Key))
+                if (string.IsNullOrEmpty(request?.Payload?.Key))
                 {
                     throw new ArgumentNullException("Key cannot be null or empty");
                 }
-                if (string.IsNullOrEmpty(request.Subkey))
+                if (string.IsNullOrEmpty(request?.Payload?.Subkey))
                 {
                     throw new ArgumentNullException("Subkey cannot be null or empty");
                 }
-                var result = _cacheManagement.IncrementKey(request.Key, request.Subkey, request.IncrementValue);
+                var result = _cacheManagement.IncrementKey(request?.Payload?.Key, request?.Payload?.Subkey, request.Payload.IncrementValue);
                 response.LongValue = result;
                 LogPodName("Incr");
                 return Task.FromResult(response);
@@ -253,47 +253,47 @@ namespace binary.cache.service.Services
                 throw;
             }
         }
-        public override Task<SetTTLResponseMessage> SetTTL(SetTTLRequestMessage request, ServerCallContext context)
-        {
-            var response = new SetTTLResponseMessage();
-            bool result = false;
-            try
-            {
-                if (string.IsNullOrEmpty(request.Key))
-                {
-                    throw new ArgumentNullException("key cannot be null or empty");
-                }
-                if (!string.IsNullOrWhiteSpace(request.Key) && (string.IsNullOrEmpty(request.Subkey)))
-                {
-                    result = _cacheManagement.SetExpiry(request.Key, request.CacheDurationInSeconds);
+        //public override Task<SetTTLResponseMessage> SetTTL(SetTTLRequestMessage request, ServerCallContext context)
+        //{
+        //    var response = new SetTTLResponseMessage();
+        //    bool result = false;
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(request.Key))
+        //        {
+        //            throw new ArgumentNullException("key cannot be null or empty");
+        //        }
+        //        if (!string.IsNullOrWhiteSpace(request.Key) && (string.IsNullOrEmpty(request.Subkey)))
+        //        {
+        //            result = _cacheManagement.SetExpiry(request.Key, request.CacheDurationInSeconds);
 
-                }
-                if (!string.IsNullOrWhiteSpace(request.Key) && (!string.IsNullOrEmpty(request.Subkey)))
-                {
-                    result = _cacheManagement.SetExpiry(request.Key, request.Subkey, request.CacheDurationInSeconds);
-                    response.Subkey = request.Subkey;
+            //        }
+            //        if (!string.IsNullOrWhiteSpace(request.Key) && (!string.IsNullOrEmpty(request.Subkey)))
+            //        {
+            //            result = _cacheManagement.SetExpiry(request.Key, request.Subkey, request.CacheDurationInSeconds);
+            //            response.Subkey = request.Subkey;
 
-                }
+            //        }
 
-                response.Key = request.Key;
+            //        response.Key = request.Key;
 
 
-                response.StatusCode = result ? 200 : 500;
-                response.Message = result ? "TTL set successfully" : "Error in setting TTL";
-                LogPodName("Set TTL");
-                return Task.FromResult(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
-                response.Key = request.Key;
-                response.Subkey = request.Subkey;
-                response.StatusCode = 500;
-                response.Message = ex.Message;
-                LogPodName("Set TTL with Exception");
-                return Task.FromResult(response);
-            }
-        }
+            //        response.StatusCode = result ? 200 : 500;
+            //        response.Message = result ? "TTL set successfully" : "Error in setting TTL";
+            //        LogPodName("Set TTL");
+            //        return Task.FromResult(response);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
+            //        response.Key = request.Key;
+            //        response.Subkey = request.Subkey;
+            //        response.StatusCode = 500;
+            //        response.Message = ex.Message;
+            //        LogPodName("Set TTL with Exception");
+            //        return Task.FromResult(response);
+            //    }
+            //}
         public override Task<StoreCacheResponse> SetCacheString(SetCacheStringRequest request, ServerCallContext context)
         {
             var response = new StoreCacheResponse();

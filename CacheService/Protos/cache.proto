@@ -10,6 +10,11 @@ message CacheMessage{
 	bytes value=3;
 	int32 cache_duration_in_seconds=4;
 }
+message IncrementPayload{
+	string key=1;
+	string subkey=2;
+	int64 increment_value=3;
+}
 message CacheError{
 	int32 error_code=1;
 	string message=2;
@@ -71,9 +76,7 @@ message DeleteCachedValue{
 		string message=1;
 }
 message IncrRequestMessage{
-	string key=1;
-	string subkey=2;
-	int64 increment_value=3;
+	IncrementPayload payload=1;
 }
 message CountIncrResponse{
 	int64 long_value=3;
@@ -110,58 +113,41 @@ message GetCachedValueUI{
 service Cache{
 	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse){
 		option (google.api.http) = {
-			post: "/v1/cache"
+			post: "/v2/cache/SetCache"
 			body: "cacheMessage"
 		};
 	};
 	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse){
 		option (google.api.http) = {
-			get: "/v1/cache/{key}"
-			additional_bindings {
-				get: "/v1/cache/{key}/{subkey}"
-			}
+			get: "/v2/cache/key/{key}/subkey/{subkey}"
 		};
 	};
 	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse){
 		option (google.api.http) = {
-			delete: "/v1/cache/{key}"
-			additional_bindings {
-				delete: "/v1/cache/{key}/{subkey}"
-			}
+			delete: "/v2/cache/key/{key}/subkey/{subkey}"
 		};
 	};
 	rpc GetAllSubkeys(GetAllSubkeysRequest) returns(GetAllSubkeysResponse){
 		option (google.api.http) = {
-			get: "/v1/cache/{key}/subkeys"
+			get: "/v2/cache/key/{key}/subkeys"
 		};
 	};
 	rpc GetSubkeyCount(GetCachedValueRequest) returns(CountIncrResponse){
 		option (google.api.http) = {
-			get: "/v1/cache/{key}"
+			get: "/v2/cache/key/{key}/count"
 		};
 	};
 	rpc Incr(IncrRequestMessage) returns(CountIncrResponse){
 		option (google.api.http) = {
-			post: "/v1/cache/incr"
-			body: "increment_value"
+			post: "/v2/cache/incr"
+			body: "payload"
 		};
 	};
-	rpc SetTTL(SetTTLRequestMessage) returns(SetTTLResponseMessage){
-		option (google.api.http) = {
-			post: "/v1/cache/ttl"
-			body: "cache_duration_in_seconds"
-		};
-	};
-	rpc SetCacheString(SetCacheStringRequest) returns(StoreCacheResponse){
-		option (google.api.http) = {
-			post: "/v1/cache/ui"
-			body: "cacheMessage"
-		};
-	};
-	rpc GetCacheString(GetCachedValueRequest) returns(GetValueStringResponse){
-		option (google.api.http) = {
-			get: "/v1/cache/ui/{key}/{subkey}"
-		};
-	};
+	rpc SetTTL(SetTTLRequestMessage) returns(SetTTLResponseMessage);
+	
+	rpc SetCacheString(SetCacheStringRequest) returns(StoreCacheResponse);
+	rpc GetCacheString(GetCachedValueRequest) returns(GetValueStringResponse);
+		
+	
 }
 

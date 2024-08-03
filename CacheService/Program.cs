@@ -2,6 +2,8 @@ using binary.cache.service;
 using binary.cache.service.domain;
 using binary.cache.service.LRUCache;
 using binary.cache.service.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(webOptions =>
@@ -24,10 +26,28 @@ builder.Services.AddScoped<ICacheManagement, CacheManagement>();
 builder.Services.AddSingleton<LRUCache<byte[]>>();
 builder.Services.AddSingleton<FolderWatcherService>();
 builder.Services.AddHostedService<FileCleanupService>();
+// Add Swagger services
+builder.Services.AddGrpcSwagger();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CacheService API", Version = "v1" });
+    var filePath = Path.Combine(AppContext.BaseDirectory, "binary.cache.service.xml");
+    c.IncludeXmlComments(filePath);
+    c.IncludeGrpcXmlComments(filePath, includeControllerXmlComments: true);
+    //c.IncludeGrpcXmlComments(".");
+    //c.IncludeXmlComments(".");
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.MapGrpcService<GreeterService>();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CacheService API V1");
+});
+//app.MapGrpcService<GreeterService>();
 app.MapGrpcService<CacheService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
