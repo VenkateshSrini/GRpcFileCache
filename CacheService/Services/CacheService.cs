@@ -253,77 +253,77 @@ namespace binary.cache.service.Services
                 throw;
             }
         }
-        //public override Task<SetTTLResponseMessage> SetTTL(SetTTLRequestMessage request, ServerCallContext context)
-        //{
-        //    var response = new SetTTLResponseMessage();
-        //    bool result = false;
-        //    try
-        //    {
-        //        if (string.IsNullOrEmpty(request.Key))
-        //        {
-        //            throw new ArgumentNullException("key cannot be null or empty");
-        //        }
-        //        if (!string.IsNullOrWhiteSpace(request.Key) && (string.IsNullOrEmpty(request.Subkey)))
-        //        {
-        //            result = _cacheManagement.SetExpiry(request.Key, request.CacheDurationInSeconds);
+        public override Task<SetTTLResponseMessage> SetTTL(SetTTLRequestMessage request, ServerCallContext context)
+        {
+            var response = new SetTTLResponseMessage();
+            bool result = false;
+            try
+            {
+                if (string.IsNullOrEmpty(request.Payload.Key))
+                {
+                    throw new ArgumentNullException("key cannot be null or empty");
+                }
+                if (!string.IsNullOrWhiteSpace(request.Payload.Key) && (string.IsNullOrEmpty(request.Payload.Subkey)))
+                {
+                    result = _cacheManagement.SetExpiry(request.Payload.Key, request.Payload.CacheDurationInSeconds);
 
-            //        }
-            //        if (!string.IsNullOrWhiteSpace(request.Key) && (!string.IsNullOrEmpty(request.Subkey)))
-            //        {
-            //            result = _cacheManagement.SetExpiry(request.Key, request.Subkey, request.CacheDurationInSeconds);
-            //            response.Subkey = request.Subkey;
+                }
+                if (!string.IsNullOrWhiteSpace(request.Payload.Key) && (!string.IsNullOrEmpty(request.Payload.Subkey)))
+                {
+                    result = _cacheManagement.SetExpiry(request.Payload.Key, request.Payload.Subkey, request.Payload.CacheDurationInSeconds);
+                    response.Subkey = request.Payload.Subkey;
 
-            //        }
+                }
 
-            //        response.Key = request.Key;
+                response.Key = request.Payload.Key;
 
 
-            //        response.StatusCode = result ? 200 : 500;
-            //        response.Message = result ? "TTL set successfully" : "Error in setting TTL";
-            //        LogPodName("Set TTL");
-            //        return Task.FromResult(response);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
-            //        response.Key = request.Key;
-            //        response.Subkey = request.Subkey;
-            //        response.StatusCode = 500;
-            //        response.Message = ex.Message;
-            //        LogPodName("Set TTL with Exception");
-            //        return Task.FromResult(response);
-            //    }
-            //}
+                response.StatusCode = result ? 200 : 500;
+                response.Message = result ? "TTL set successfully" : "Error in setting TTL";
+                LogPodName("Set TTL");
+                return Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
+                response.Key = request.Payload.Key;
+                response.Subkey = request.Payload.Subkey;
+                response.StatusCode = 500;
+                response.Message = ex.Message;
+                LogPodName("Set TTL with Exception");
+                return Task.FromResult(response);
+            }
+        }
         public override Task<StoreCacheResponse> SetCacheString(SetCacheStringRequest request, ServerCallContext context)
         {
             var response = new StoreCacheResponse();
             try
             {
-                if (string.IsNullOrEmpty(request?.Key))
+                if (string.IsNullOrEmpty(request.Payload.Key))
                 {
                     throw new ArgumentNullException("Key cannot be null or empty");
                 }
-                if (string.IsNullOrEmpty(request?.Subkey))
+                if (string.IsNullOrEmpty(request.Payload.Subkey))
                 {
                     throw new ArgumentNullException("Subkey cannot be null or empty");
                 }
-                if (string.IsNullOrEmpty(request.Value))
+                if (string.IsNullOrEmpty(request.Payload.Value))
                 {
                     throw new ArgumentNullException("Value cannot be null or empty");
                 }
-                byte[] contentBytes = Encoding.UTF8.GetBytes(request.Value);
-                var result = _cacheManagement.Set(request.Key, request.Subkey, contentBytes);
+                byte[] contentBytes = Encoding.UTF8.GetBytes(request.Payload.Value);
+                var result = _cacheManagement.Set(request.Payload.Key, request.Payload.Subkey, contentBytes);
                 if (!result)
                 {
-                    response.Key = request.Key;
-                    response.Subkey = request.Subkey;
+                    response.Key = request.Payload.Key;
+                    response.Subkey = request.Payload.Subkey;
                     response.StatusCode = 500;
                     response.Message = "Error in setting the cache";
                 }
                 else
                 {
-                    response.Key = request.Key;
-                    response.Subkey = request.Subkey;
+                    response.Key = request.Payload.Key;
+                    response.Subkey = request.Payload.Subkey;
                     response.StatusCode = 200;
                     response.Message = "Cache set successfully";
                 }
@@ -333,8 +333,8 @@ namespace binary.cache.service.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Error in cache {ex.Message}\n {ex.StackTrace}");
-                response.Key = request.Key;
-                response.Subkey = request.Subkey;
+                response.Key = request.Payload.Key;
+                response.Subkey = request.Payload.Subkey;
                 response.StatusCode = 500;
                 response.Message = ex.Message;
                 LogPodName("Set Cache UI with Exception");

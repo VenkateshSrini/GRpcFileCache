@@ -15,6 +15,12 @@ message IncrementPayload{
 	string subkey=2;
 	int64 increment_value=3;
 }
+message TTLPayLoad{
+	string key=1;
+	string subkey=2;
+	int32 cache_duration_in_seconds=3;
+
+}
 message CacheError{
 	int32 error_code=1;
 	string message=2;
@@ -82,9 +88,8 @@ message CountIncrResponse{
 	int64 long_value=3;
 }
 message SetTTLRequestMessage{
-	string key=1;
-	string subkey=2;
-	int32 cache_duration_in_seconds=3;
+	TTLPayLoad payload=1;
+	
 }
 message SetTTLResponseMessage{
 	string key=1;
@@ -92,11 +97,14 @@ message SetTTLResponseMessage{
 	int32 status_code=3;
 	string message=4;
 }
-message SetCacheStringRequest{
+message StrigCacheMessagePayload{
 	string key=1;
 	string subkey=2;
 	string value=3;
 	int32 cache_duration_in_seconds=4;
+}
+message SetCacheStringRequest{
+	StrigCacheMessagePayload payload=1;
 }
 message GetValueStringResponse{
 	string key=1;
@@ -143,10 +151,24 @@ service Cache{
 			body: "payload"
 		};
 	};
-	rpc SetTTL(SetTTLRequestMessage) returns(SetTTLResponseMessage);
+	rpc SetTTL(SetTTLRequestMessage) returns(SetTTLResponseMessage){
+		option (google.api.http) = {
+			post: "/v2/cache/SetTTL"
+			body: "payload"
+		};
+	};
 	
-	rpc SetCacheString(SetCacheStringRequest) returns(StoreCacheResponse);
-	rpc GetCacheString(GetCachedValueRequest) returns(GetValueStringResponse);
+	rpc SetCacheString(SetCacheStringRequest) returns(StoreCacheResponse){
+		option (google.api.http) = {
+			post: "/v2/cache/SetCacheString"
+			body: "payload"
+		};
+	};
+	rpc GetCacheString(GetCachedValueRequest) returns(GetValueStringResponse){
+		option (google.api.http) = {
+			get: "/v2/cache/string/key/{key}/subkey/{subkey}"
+		};
+	};
 		
 	
 }
