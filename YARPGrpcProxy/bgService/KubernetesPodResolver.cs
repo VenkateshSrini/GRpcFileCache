@@ -11,6 +11,7 @@ namespace YARPGrpcProxy.bgService
         private readonly IProxyConfigProvider _proxyConfigProvider;
         private readonly string _headlessServiceName;
         private readonly string _namespaceName;
+        private readonly int _port;
         private readonly TimeSpan _updateInterval;
         private readonly LookupClient _dnsClient;
         private readonly IConfiguration _configuration;
@@ -26,6 +27,7 @@ namespace YARPGrpcProxy.bgService
             _dnsClient = new LookupClient();
             _configuration = configuration;
             _namespaceName = configuration.GetValue<string>("Kubernetes:Namespace");
+            _port = configuration.GetValue<int>("Kubernetes:GrpcPort");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -37,11 +39,16 @@ namespace YARPGrpcProxy.bgService
                     
                     var fqdn = $"{_headlessServiceName}.{_namespaceName}.svc.cluster.local";
 
+                    
                     var dnsResult = await _dnsClient.QueryAsync(fqdn, QueryType.A);
+                    //foreach (var answer in dnsResult.Answers.ARecords())
+                    //{
+                    //    _logger.LogInformation($"Found pod IP: {answer.Address}");
+                    //}
                     var destinations = dnsResult.Answers.ARecords()
                         .ToDictionary(
                             record => record.Address.ToString(),
-                            record => new DestinationConfig { Address = $"http://{record.Address}:80" });
+                            record => new DestinationConfig { Address = $"http://{record.Address}:{_port}" });
 
                     
                     (_proxyConfigProvider as InMemoryConfigProvider)?.Update(
