@@ -1,18 +1,11 @@
-using k8s;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Steeltoe.Common.Kubernetes;
-using Steeltoe.Extensions.Configuration.Kubernetes;
+
 using Yarp.ReverseProxy.Configuration;
 using YARPGrpcProxy.bgService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Steeltoe Kubernetes configuration
-builder.Configuration.AddKubernetes();
+
 
 // Add YARP services
 var initialConfig = new InMemoryConfigProvider(
@@ -45,13 +38,8 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "YARP gRPC Proxy", Version = "v1" });
 });
 var executionMode = builder.Configuration.GetValue<string>("RunIn");
-// Add Steeltoe Kubernetes services
-builder.Services.AddKubernetesApplicationInstanceInfo();
-builder.Services.AddKubernetesClient(k8sClientConfiguration =>
-{
-    k8sClientConfiguration= KubernetesClientConfiguration.BuildConfigFromConfigFile();
-    
-});
+
+
 
 // Add background service for pod resolution
 builder.Services.AddHostedService<KubernetesPodResolver>();

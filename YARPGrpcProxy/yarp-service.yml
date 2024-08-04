@@ -2,6 +2,7 @@
 kind: Service
 metadata:
   name: yarp-grpc-proxy
+  namespace: grpc-cache
 spec:
   selector:
     app: yarp-grpc-proxy

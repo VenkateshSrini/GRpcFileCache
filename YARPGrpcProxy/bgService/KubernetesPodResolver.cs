@@ -1,16 +1,4 @@
 ﻿using DnsClient;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
-using Steeltoe.Common.Kubernetes;
-using Steeltoe.Extensions.Configuration.Kubernetes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Yarp.ReverseProxy.Configuration;
 
 namespace YARPGrpcProxy.bgService
@@ -29,7 +17,7 @@ namespace YARPGrpcProxy.bgService
 
         public KubernetesPodResolver(ILogger<KubernetesPodResolver> logger,
             IProxyConfigProvider proxyConfigProvider,
-            IConfiguration configuration, IApplicationInstanceInfo applicationInstanceInfo)
+            IConfiguration configuration)
         {
             _logger = logger;
             _proxyConfigProvider = proxyConfigProvider;
@@ -37,7 +25,7 @@ namespace YARPGrpcProxy.bgService
             _updateInterval = TimeSpan.FromSeconds(30);
             _dnsClient = new LookupClient();
             _configuration = configuration;
-            _namespaceName = (applicationInstanceInfo as KubernetesApplicationOptions)?.NameSpace ?? "default";
+            _namespaceName = configuration.GetValue<string>("Kubernetes:Namespace");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

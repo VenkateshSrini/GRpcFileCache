@@ -21,7 +21,7 @@ spec:
         env:
         - name: Kubernetes__HeadlessServiceName
           value: "file-cache-grpc-service"
-        - name: spring__cloud__kubernetes__namespace
+        - name: Kubernetes__Namespace
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace

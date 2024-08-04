@@ -23,7 +23,7 @@ spec:
         persistentVolumeClaim:
           claimName: pv-cache-claim
       containers:
-      - image: venkateshsrini3/bfile-cache-dns:latest
+      - image: venkateshsrini3/bfile-cache-dns:1.0.0
         name: file-cache
         volumeMounts:
         - name: pv-vol
@@ -35,7 +35,7 @@ spec:
           name: http
         env:
         - name: "http2Port"
-          value: "80"
+          value: "5275"
         - name: "http1Port"
           value: "7007"
         - name: "podName"
