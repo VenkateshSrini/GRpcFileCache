@@ -1,0 +1,175 @@
+syntax = "proto3";
+import "Protos/google/api/annotations.proto";
+option csharp_namespace = "binary.cache.service";
+
+package cache.v2;
+
+message CacheMessage{
+	string key=1;
+	string subkey=2;
+	bytes value=3;
+	int32 cache_duration_in_seconds=4;
+}
+message IncrementPayload{
+	string key=1;
+	string subkey=2;
+	int64 increment_value=3;
+}
+message TTLPayLoad{
+	string key=1;
+	string subkey=2;
+	int32 cache_duration_in_seconds=3;
+
+}
+message CacheError{
+	int32 error_code=1;
+	string message=2;
+}
+
+message StoreCacheRequest{
+	CacheMessage cacheMessage=1;
+}
+message StoreCacheResponse{
+	string key=1;
+	string subkey=2;
+	int32 status_code=3;
+	string message=4;
+}
+
+message GetCachedValueRequest{
+	string key=1;
+	string subkey=2;
+}
+message GetCachedValueResponse{
+	string key=1;
+	string subkey=2;
+	oneof get_result{
+		GetCachedValue cached_value=3;
+		CacheError cache_retrival_error=4;
+		SubkeyValuePairResponse subkey_value_pairs=5;
+	}
+}
+message GetCachedValue{
+	bytes value=1;
+}
+message SubkeyValuePair{
+	string subkey=1;
+	bytes value=2;
+}
+message SubkeyValuePairResponse{
+	repeated SubkeyValuePair subkey_value_pairs=1;
+}
+message DeleteCachedValueRequest{
+	string key=1;
+	string subkey=2;
+}
+message GetAllSubkeysRequest{
+	string key=1;
+}
+message GetAllSubkeysResponse{
+	repeated string subkeys=2;
+}
+
+message DeleteCachedResponse{
+	string key=1;
+	string subkey=2;
+	oneof delete_result{
+		DeleteCachedValue delete_response=3;
+		CacheError cache_deletion_error=4;
+	}
+}
+message DeleteCachedValue{
+		string message=1;
+}
+message IncrRequestMessage{
+	IncrementPayload payload=1;
+}
+message CountIncrResponse{
+	int64 long_value=3;
+}
+message SetTTLRequestMessage{
+	TTLPayLoad payload=1;
+	
+}
+message SetTTLResponseMessage{
+	string key=1;
+	string subkey=2;
+	int32 status_code=3;
+	string message=4;
+}
+message StrigCacheMessagePayload{
+	string key=1;
+	string subkey=2;
+	string value=3;
+	int32 cache_duration_in_seconds=4;
+}
+message SetCacheStringRequest{
+	StrigCacheMessagePayload payload=1;
+}
+message GetValueStringResponse{
+	string key=1;
+	string subkey=2;
+	oneof get_result{
+		GetCachedValueUI cached_value=3;
+		CacheError cache_retrival_error=4;
+	}
+}
+message GetCachedValueUI{
+	string cache_content=1;
+}
+// The greeting service definition.
+service Cache{
+	rpc SetCache(StoreCacheRequest) returns (StoreCacheResponse){
+		option (google.api.http) = {
+			post: "/v2/cache/SetCache"
+			body: "cacheMessage"
+		};
+	};
+	rpc GetCache(GetCachedValueRequest) returns(GetCachedValueResponse){
+		option (google.api.http) = {
+			get: "/v2/cache/key/{key}/subkey/{subkey}"
+		};
+	};
+	rpc DeleteCache(DeleteCachedValueRequest) returns(DeleteCachedResponse){
+		option (google.api.http) = {
+			delete: "/v2/cache/key/{key}/subkey/{subkey}"
+		};
+	};
+	rpc GetAllSubkeys(GetAllSubkeysRequest) returns(GetAllSubkeysResponse){
+		option (google.api.http) = {
+			get: "/v2/cache/key/{key}/subkeys"
+		};
+	};
+	rpc GetSubkeyCount(GetCachedValueRequest) returns(CountIncrResponse){
+		option (google.api.http) = {
+			get: "/v2/cache/key/{key}/count"
+		};
+	};
+	rpc Incr(IncrRequestMessage) returns(CountIncrResponse){
+		option (google.api.http) = {
+			post: "/v2/cache/incr"
+			body: "payload"
+		};
+	};
+	rpc SetTTL(SetTTLRequestMessage) returns(SetTTLResponseMessage){
+		option (google.api.http) = {
+			post: "/v2/cache/SetTTL"
+			body: "payload"
+		};
+	};
+	
+	rpc SetCacheString(SetCacheStringRequest) returns(StoreCacheResponse){
+		option (google.api.http) = {
+			post: "/v2/cache/SetCacheString"
+			body: "payload"
+		};
+	};
+	rpc GetCacheString(GetCachedValueRequest) returns(GetValueStringResponse){
+		option (google.api.http) = {
+			get: "/v2/cache/string/key/{key}/subkey/{subkey}"
+		};
+	};
+		
+	
+}
+

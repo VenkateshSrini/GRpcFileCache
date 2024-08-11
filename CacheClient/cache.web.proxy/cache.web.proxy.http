@@ -1,0 +1,6 @@
+@cache.web.proxy_HostAddress = http://localhost:5227
+
+GET {{cache.web.proxy_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
