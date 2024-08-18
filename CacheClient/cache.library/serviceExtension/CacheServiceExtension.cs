@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using binary.cache.service;
 using Grpc.Core;
 using System.Threading.Channels;
+using cache.library.CacheFacade;
 namespace cache.library.serviceExtension
 {
     public static class CacheServiceExtension
@@ -45,6 +46,7 @@ namespace cache.library.serviceExtension
                     }
                     return Task.CompletedTask;
                 });
+            services.AddSingleton<ICacheProvider, CacheProvider>();
             return services;
         }
     }
