@@ -16,6 +16,13 @@ namespace cache.library.CacheFacade
         /// <returns>byte array</returns>
         CacheResponse<byte[]> Get(string key, string subKey);
         /// <summary>
+        /// Gets the byte Array pertaining to the key and subkey
+        /// </summary>
+        /// <param name="key">Main key</param>
+        /// <param name="subKey">Sub key</param>
+        /// <returns>byte array</returns>
+        Task<CacheResponse<byte[]>> GetAsync(string key, string subKey);
+        /// <summary>
         /// Gets the list of subkeys and their values for the main key
         /// </summary>
         /// <param name="key"> Key whose Value needs to be retrieved</param>

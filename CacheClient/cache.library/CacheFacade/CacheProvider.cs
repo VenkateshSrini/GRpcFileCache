@@ -63,6 +63,53 @@ namespace cache.library.CacheFacade
                 };
             }
         }
+        public async Task<CacheResponse<byte[]>> GetAsync(string key, string subKey)
+        {
+            GetCachedValueRequest request = new GetCachedValueRequest
+            {
+                Key = key,
+                Subkey = subKey
+            };
+            try
+            {
+                var response = await _client.GetCacheAsync(request);
+                return response.GetResultCase switch
+                {
+                    GetCachedValueResponse.GetResultOneofCase.CachedValue => new CacheResponse<byte[]>
+                    {
+                        Key = response.Key,
+                        SubKey = response.Subkey,
+                        Value = response.CachedValue.Value.ToArray(),
+                        StatusCode = 200
+                    },
+                    GetCachedValueResponse.GetResultOneofCase.CacheRetrivalError => new CacheResponse<byte[]>
+                    {
+                        Key = response.Key,
+                        SubKey = response.Subkey,
+                        StatusCode = 500,
+                        ErrorMessage = response.CacheRetrivalError.Message
+                    },
+                    _ => new CacheResponse<byte[]>
+                    {
+                        Key = key,
+                        SubKey = subKey,
+                        StatusCode = 500,
+                        ErrorMessage = "Unknown error"
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in getting the value from cache");
+                return new CacheResponse<byte[]>
+                {
+                    Key = key,
+                    SubKey = subKey,
+                    StatusCode = 500,
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
         public CacheResponse<List<(string subKey, byte[] cacheValue)>> Scan(string key)
         {
             GetCachedValueRequest request = new GetCachedValueRequest
