@@ -29,6 +29,12 @@ namespace cache.library.CacheFacade
         /// <returns>Cache response containing the List of Tuples of subkey and byte array</returns>
         CacheResponse<List<(string subKey, byte[]cacheValue)>>Scan(string key);
         /// <summary>
+        /// Gets the list of subkeys and their values for the main key
+        /// </summary>
+        /// <param name="key"> Key whose Value needs to be retrieved</param>
+        /// <returns>Cache response containing the List of Tuples of subkey and byte array</returns>
+        Task<CacheResponse<List<(string subKey, byte[] cacheValue)>>> ScanAsync(string key);
+        /// <summary>
         /// Sets the byte array to the key and subkey
         /// </summary>
         /// <param name="key">Main Key</param>
@@ -37,6 +43,14 @@ namespace cache.library.CacheFacade
         /// <returns></returns>
         CacheResponse<bool> Set(string key, string subKey, byte[] value, int timeToLive = 0);
         /// <summary>
+        /// Sets the byte array to the key and subkey
+        /// </summary>
+        /// <param name="key">Main Key</param>
+        /// <param name="subKey">Sub key</param>
+        /// <param name="value">Cache value</param>
+        /// <returns></returns>
+        Task<CacheResponse<bool>> SetAsync(string key, string subKey, byte[] value, int timeToLive = 0);
+        /// <summary>
         /// Remove the subkey and value of the main key
         /// </summary>
         /// <param name="key">main key</param>
@@ -44,18 +58,37 @@ namespace cache.library.CacheFacade
         /// <returns> Value indicating success or failure</returns>
         CacheResponse<string> Remove(string key, string subKey);
         /// <summary>
+        /// Remove the subkey and value of the main key
+        /// </summary>
+        /// <param name="key">main key</param>
+        /// <param name="subKey">sub key</param>
+        /// <returns> Value indicating success or failure</returns>
+        Task<CacheResponse<string>> RemoveAsync(string key, string subKey);
+        /// <summary>
         /// Remove the main key and all its subkeys
         /// </summary>
         /// <param name="key">Main key</param>
         /// <returns>Value indicating success or failure</returns>
         CacheResponse<string> Remove(string key);
         /// <summary>
+        /// Remove the main key and all its subkeys
+        /// </summary>
+        /// <param name="key">Main key</param>
+        /// <returns>Value indicating success or failure</returns>
+        Task<CacheResponse<string>> RemoveAsync(string key);
+        /// <summary>
         /// Gets the list of subkeys for the main key
         /// </summary>
         /// <param name="key"> Main Key</param>
         /// <returns></returns>
         CacheResponse<List<string>>? GetSubKeys(string key);
-       
+        /// <summary>
+        /// Gets the list of subkeys for the main key
+        /// </summary>
+        /// <param name="key"> Main Key</param>
+        /// <returns></returns>
+        Task<CacheResponse<List<string>>>? GetSubKeysAsync(string key);
+
         /// <summary>
         /// Gets the count of subkeys for the main key
         /// </summary>

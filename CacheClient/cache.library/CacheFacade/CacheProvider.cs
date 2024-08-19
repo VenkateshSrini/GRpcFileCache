@@ -153,6 +153,50 @@ namespace cache.library.CacheFacade
                 };
             }
         }
+
+        public async Task<CacheResponse<List<(string subKey, byte[] cacheValue)>>> ScanAsync(string key)
+        {
+            GetCachedValueRequest request = new GetCachedValueRequest
+            {
+                Key = key
+            };
+            try
+            {
+                var response = await _client.GetCacheAsync(request);
+                return response.GetResultCase switch
+                {
+                    GetCachedValueResponse.GetResultOneofCase.SubkeyValuePairs => new CacheResponse<List<(string subKey, byte[] cacheValue)>>
+                    {
+
+                        Key = response.Key,
+                        Value = response.SubkeyValuePairs.SubkeyValuePairs.Select(x => (x.Subkey, x.Value.ToArray())).ToList(),
+                        StatusCode = 200
+                    },
+                    GetCachedValueResponse.GetResultOneofCase.CacheRetrivalError => new CacheResponse<List<(string subKey, byte[] cacheValue)>>
+                    {
+                        Key = response.Key,
+                        StatusCode = 500,
+                        ErrorMessage = response.CacheRetrivalError.Message
+                    },
+                    _ => new CacheResponse<List<(string subKey, byte[] cacheValue)>>
+                    {
+                        Key = key,
+                        StatusCode = 500,
+                        ErrorMessage = "Unknown error"
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in getting the value from cache");
+                return new CacheResponse<List<(string subKey, byte[] cacheValue)>>
+                {
+                    Key = key,
+                    StatusCode = 500,
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
         public CacheResponse<long> GetSubkeyCount(string key)
         {
             GetCachedValueRequest request = new GetCachedValueRequest
@@ -162,6 +206,34 @@ namespace cache.library.CacheFacade
             try
             {
                 var response = _client.GetSubkeyCount(request);
+                return new CacheResponse<long>
+                {
+                    Key = key,
+                    Value = response.LongValue,
+                    StatusCode = 200
+                };
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in getting the value from cache");
+                return new CacheResponse<long>
+                {
+                    Key = key,
+                    ErrorMessage = ex.Message,
+                    StatusCode = 500
+                }; ;
+            }
+        }
+        public async Task<CacheResponse<long>> GetSubkeyCountAsync(string key)
+        {
+            GetCachedValueRequest request = new GetCachedValueRequest
+            {
+                Key = key
+            };
+            try
+            {
+                var response = await _client.GetSubkeyCountAsync(request);
                 return new CacheResponse<long>
                 {
                     Key = key,
@@ -289,10 +361,57 @@ namespace cache.library.CacheFacade
                 }; ;
             }
         }
+        public async Task<CacheResponse<string>> RemoveAsync(string key, string subKey)
+        {
+            var request = new DeleteCachedValueRequest { Key = key, Subkey = subKey };
+            try
+            {
+                var response = await _client.DeleteCacheAsync(request);
+                return response.DeleteResultCase switch
+                {
+                    DeleteCachedResponse.DeleteResultOneofCase.DeleteResponse => new CacheResponse<string>
+                    {
+                        Key = key,
+                        SubKey = subKey,
+                        Value = response.DeleteResponse.Message,
+                        StatusCode = 200
+                    },
+                    DeleteCachedResponse.DeleteResultOneofCase.CacheDeletionError => new CacheResponse<string>
+                    {
+                        Key = key,
+                        SubKey = subKey,
+                        StatusCode = 500,
+                        ErrorMessage = response.CacheDeletionError.Message
+                    },
+                    _ => new CacheResponse<string>
+                    {
+                        Key = key,
+                        SubKey = subKey,
+                        StatusCode = 500,
+                        ErrorMessage = "Unknown error"
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in getting the value from cache");
+                return new CacheResponse<string>
+                {
+                    Key = key,
+                    SubKey = subKey,
+                    ErrorMessage = ex.Message,
+                    StatusCode = 500
+                }; ;
+            }
+        }
 
         public CacheResponse<string> Remove(string key)
         {
             return Remove(key, "");
+        }
+        public async Task<CacheResponse<string>> RemoveAsync(string key)
+        {
+            return await RemoveAsync(key, "");
         }
         public CacheResponse<bool> Set(string key, string subKey, byte[] value, int timeToLive = 0)
         {
@@ -309,6 +428,43 @@ namespace cache.library.CacheFacade
             try
             {
                 var response = _client.SetCache(request);
+                return new CacheResponse<bool>
+                {
+                    Key = key,
+                    SubKey = subKey,
+                    StatusCode = 200,
+                    Value = (response.StatusCode == 200) ? true : false
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in getting the value from cache");
+                return new CacheResponse<bool>
+                {
+                    Key = key,
+                    SubKey = subKey,
+                    StatusCode = 500,
+                    ErrorMessage = ex.Message,
+                    Value = false
+                };
+            }
+
+        }
+        public async Task<CacheResponse<bool>> SetAsync(string key, string subKey, byte[] value, int timeToLive = 0)
+        {
+            var request = new StoreCacheRequest
+            {
+                CacheMessage = new CacheMessage
+                {
+                    Key = key,
+                    Subkey = subKey,
+                    Value = Google.Protobuf.ByteString.CopyFrom(value),
+                    CacheDurationInSeconds = timeToLive
+                }
+            };
+            try
+            {
+                var response = await _client.SetCacheAsync(request);
                 return new CacheResponse<bool>
                 {
                     Key = key,
